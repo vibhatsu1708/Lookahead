@@ -14,6 +14,7 @@ struct StatsView: View {
     @ObservedObject var sessionManager: SessionManager
     
     @State private var selectedCubeFilter: CubeType? = nil
+    @State private var selectedSolve: SolveEntity? = nil
     
     private var currentSessionSolves: [SolveEntity] {
         sessionManager.currentSession?.solvesArray ?? []
@@ -28,6 +29,10 @@ struct StatsView: View {
     
     private var validSolves: [SolveEntity] {
         filteredSolves.filter { $0.penaltyType != .dnf }
+    }
+    
+    private var chronologicalSolves: [SolveEntity] {
+        validSolves.reversed()
     }
     
     var body: some View {
@@ -54,7 +59,6 @@ struct StatsView: View {
                         VStack(spacing: 24) {
                             // Stats summary
                             statsSummary
-                                .padding(.horizontal, 24)
                             
                             // Line chart
                             lineChart
@@ -64,13 +68,15 @@ struct StatsView: View {
                             additionalStats
                                 .padding(.horizontal, 24)
                         }
-                        .padding(.top, 20)
                         .padding(.bottom, 100)
                     }
                 }
             }
         }
         .preferredColorScheme(.dark)
+        .sheet(item: $selectedSolve) { solve in
+            SolveDetailSheet(solve: solve)
+        }
     }
     
     // MARK: - Header
@@ -90,7 +96,7 @@ struct StatsView: View {
             Spacer()
         }
         .padding(.horizontal, 24)
-        .padding(.top, 60)
+        .padding(.top, 30)
         .padding(.bottom, 12)
     }
     
@@ -129,14 +135,8 @@ struct StatsView: View {
         .padding(.bottom, 16)
     }
     
-    // MARK: - Stats Summary
-    
     private var statsSummary: some View {
-        HStack(spacing: 16) {
-            StatCard(title: "Best", value: formatTime(bestTime), color: Color(red: 0.2, green: 0.9, blue: 0.4))
-            StatCard(title: "Avg", value: formatTime(averageTime), color: Color(red: 0.4, green: 0.6, blue: 1.0))
-            StatCard(title: "Ao5", value: formatTime(ao5), color: Color(red: 1.0, green: 0.6, blue: 0.3))
-        }
+        StatsSummaryView(solves: filteredSolves)
     }
     
     // MARK: - Line Chart
@@ -148,7 +148,7 @@ struct StatsView: View {
                 .foregroundStyle(.white)
             
             Chart {
-                ForEach(Array(validSolves.enumerated()), id: \.element.id) { index, solve in
+                ForEach(Array(chronologicalSolves.enumerated()), id: \.element.id) { index, solve in
                     LineMark(
                         x: .value("Solve", index + 1),
                         y: .value("Time", solve.effectiveTime ?? 0)
@@ -186,6 +186,23 @@ struct StatsView: View {
                                         .fill(.white.opacity(0.1))
                                 )
                         }
+                }
+            }
+            .chartOverlay { proxy in
+                GeometryReader { geometry in
+                    Rectangle().fill(.clear).contentShape(Rectangle())
+                        .gesture(
+                            SpatialTapGesture()
+                                .onEnded { value in
+                                    let location = value.location
+                                    if let (index, _) = proxy.value(at: location, as: (Int, Double).self) {
+                                        let chartData = chronologicalSolves
+                                        if index >= 1 && index <= chartData.count {
+                                            selectedSolve = chartData[index - 1]
+                                        }
+                                    }
+                                }
+                        )
                 }
             }
             .frame(height: 250)
@@ -314,17 +331,8 @@ struct StatsView: View {
     }
     
     private var ao5: TimeInterval? {
-        let validSolvesForAo5 = Array(filteredSolves.prefix(5))
-        guard validSolvesForAo5.count >= 5 else { return nil }
-        
-        if validSolvesForAo5.contains(where: { $0.penaltyType == .dnf }) {
-            return nil
-        }
-        
-        let times = validSolvesForAo5.compactMap { $0.effectiveTime }.sorted()
-        guard times.count >= 5 else { return nil }
-        let middleThree = Array(times.dropFirst().dropLast())
-        return middleThree.reduce(0, +) / 3.0
+        // Calculations handled by StatsSummaryView
+        return nil // Placeholder or just remove if unused locally
     }
     
     private var ao12: TimeInterval? {

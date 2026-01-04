@@ -14,7 +14,6 @@ struct HistoryView: View {
     
     @State private var selectedCubeFilter: CubeType? = nil
     @State private var selectedSolve: SolveEntity? = nil
-    @State private var showingDetail = false
     @State private var isGridView = false
     
     private var currentSessionSolves: [SolveEntity] {
@@ -57,10 +56,8 @@ struct HistoryView: View {
             }
         }
         .preferredColorScheme(.dark)
-        .sheet(isPresented: $showingDetail) {
-            if let solve = selectedSolve {
-                SolveDetailSheet(solve: solve)
-            }
+        .sheet(item: $selectedSolve) { solve in
+            SolveDetailSheet(solve: solve)
         }
     }
     
@@ -97,7 +94,7 @@ struct HistoryView: View {
             }
         }
         .padding(.horizontal, 24)
-        .padding(.top, 60)
+        .padding(.top, 30)
         .padding(.bottom, 12)
     }
     
@@ -136,15 +133,8 @@ struct HistoryView: View {
         .padding(.bottom, 16)
     }
     
-    // MARK: - Stats Summary
-    
     private var statsSummary: some View {
-        HStack(spacing: 16) {
-            StatCard(title: "Best", value: formatTime(bestTime), color: Color(red: 0.2, green: 0.9, blue: 0.4))
-            StatCard(title: "Avg", value: formatTime(averageTime), color: Color(red: 0.4, green: 0.6, blue: 1.0))
-            StatCard(title: "Ao5", value: formatTime(ao5), color: Color(red: 1.0, green: 0.6, blue: 0.3))
-        }
-        .padding(.horizontal, 24)
+        StatsSummaryView(solves: filteredSolves)
     }
     
     // MARK: - Empty State
@@ -183,7 +173,6 @@ struct HistoryView: View {
                         SolveRow(solve: solve)
                             .onTapGesture {
                                 selectedSolve = solve
-                                showingDetail = true
                             }
                             .contextMenu {
                                 // Penalty options
@@ -250,7 +239,6 @@ struct HistoryView: View {
                         CompactSolveCard(solve: solve)
                             .onTapGesture {
                                 selectedSolve = solve
-                                showingDetail = true
                             }
                             .contextMenu {
                                 // Penalty options
@@ -304,48 +292,7 @@ struct HistoryView: View {
     }
 
     
-    // MARK: - Calculations
-    
-    private var bestTime: TimeInterval? {
-        filteredSolves
-            .filter { $0.penaltyType != .dnf }
-            .compactMap { $0.effectiveTime }
-            .min()
-    }
-    
-    private var averageTime: TimeInterval? {
-        let validSolves = filteredSolves.filter { $0.penaltyType != .dnf }
-        guard !validSolves.isEmpty else { return nil }
-        let total = validSolves.compactMap { $0.effectiveTime }.reduce(0, +)
-        return total / Double(validSolves.count)
-    }
-    
-    private var ao5: TimeInterval? {
-        let validSolves = Array(filteredSolves.prefix(5))
-        guard validSolves.count >= 5 else { return nil }
-        
-        // Check if any are DNF
-        if validSolves.contains(where: { $0.penaltyType == .dnf }) {
-            return nil
-        }
-        
-        // Calculate Ao5 (drop best and worst, average the rest)
-        let times = validSolves.compactMap { $0.effectiveTime }.sorted()
-        guard times.count >= 5 else { return nil }
-        let middleThree = Array(times.dropFirst().dropLast())
-        return middleThree.reduce(0, +) / 3.0
-    }
-    
-    private func formatTime(_ time: TimeInterval?) -> String {
-        guard let time = time else { return "-" }
-        if time < 60 {
-            return String(format: "%.2f", time)
-        } else {
-            let minutes = Int(time) / 60
-            let seconds = time.truncatingRemainder(dividingBy: 60)
-            return String(format: "%d:%05.2f", minutes, seconds)
-        }
-    }
+    // MARK: - Helpers
     
     private func updatePenalty(_ solve: SolveEntity, to penalty: SolvePenalty) {
         withAnimation {
@@ -390,37 +337,6 @@ struct FilterChip: View {
                 )
         }
         .buttonStyle(.plain)
-    }
-}
-
-// MARK: - Stat Card
-
-struct StatCard: View {
-    let title: String
-    let value: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 6) {
-            Text(title)
-                .font(.system(size: 12, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white.opacity(0.5))
-            
-            Text(value)
-                .font(.system(size: 20, weight: .bold, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(color)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(color.opacity(0.1))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .strokeBorder(color.opacity(0.2), lineWidth: 1)
-                )
-        )
     }
 }
 

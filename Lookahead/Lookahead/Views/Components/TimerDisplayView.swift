@@ -51,64 +51,65 @@ struct TimerDisplayView: View {
     
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 0) {
-            // Whole seconds (with numeric transition)
-            Text(timeParts.whole)
-                .font(.system(size: 88, weight: .light, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(timeColor)
-                .contentTransition(.numericText())
-                .animation(.easeInOut(duration: 0.15), value: timeParts.whole)
-            
-            // Decimal point
-            Text(".")
-                .font(.system(size: 88, weight: .light, design: .rounded))
-                .foregroundStyle(timeColor)
-            
-            // Decimal digits with shimmer rectangles (only when timer is active)
-            if isTimerActive {
-                HStack(spacing: 4) {
-                    // First decimal digit
-                    Text(timeParts.decimalDigit1)
-                        .font(.system(size: 88, weight: .light, design: .rounded))
-                        .monospacedDigit()
-                        .foregroundStyle(timeColor)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 4)
-                        .background(
-                            ShimmerView(
-                                direction: shimmerDirection,
-                                isActive: true,
-                                baseColor: shimmerBaseColor,
-                                shimmerColor: shimmerHighlightColor,
-                                duration: 1.2,
-                                cornerRadius: 12
-                            )
-                        )
-                    
-                    // Second decimal digit
-                    Text(timeParts.decimalDigit2)
-                        .font(.system(size: 88, weight: .light, design: .rounded))
-                        .monospacedDigit()
-                        .foregroundStyle(timeColor)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 4)
-                        .background(
-                            ShimmerView(
-                                direction: shimmerDirection,
-                                isActive: true,
-                                baseColor: shimmerBaseColor,
-                                shimmerColor: shimmerHighlightColor,
-                                duration: 1.2,
-                                cornerRadius: 12
-                            )
-                        )
-                }
+            if time == "DNF" {
+                Text("DNF")
+                    .font(.system(size: 88, weight: .light, design: .rounded))
+                    .foregroundStyle(timeColor)
             } else {
-                // Plain decimal digits without rectangles
-                Text(timeParts.decimalDigit1 + timeParts.decimalDigit2)
+                // Whole seconds
+                Text(timeParts.whole)
                     .font(.system(size: 88, weight: .light, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(timeColor)
+                
+                // Decimal point
+                Text(".")
+                    .font(.system(size: 88, weight: .light, design: .rounded))
+                    .foregroundStyle(timeColor)
+                
+                // Decimal digits
+                if isTimerActive {
+                    HStack(spacing: 4) {
+                        Text(timeParts.decimalDigit1)
+                            .font(.system(size: 88, weight: .light, design: .rounded))
+                            .monospacedDigit()
+                            .foregroundStyle(timeColor)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 4)
+                            .background(
+                                ShimmerView(
+                                    direction: shimmerDirection,
+                                    isActive: true,
+                                    baseColor: shimmerBaseColor,
+                                    shimmerColor: shimmerHighlightColor,
+                                    duration: 1.2,
+                                    cornerRadius: 12
+                                )
+                            )
+                        
+                        Text(timeParts.decimalDigit2)
+                            .font(.system(size: 88, weight: .light, design: .rounded))
+                            .monospacedDigit()
+                            .foregroundStyle(timeColor)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 4)
+                            .background(
+                                ShimmerView(
+                                    direction: shimmerDirection,
+                                    isActive: true,
+                                    baseColor: shimmerBaseColor,
+                                    shimmerColor: shimmerHighlightColor,
+                                    duration: 1.2,
+                                    cornerRadius: 12
+                                )
+                            )
+                    }
+                } else {
+                    Text(timeParts.decimalDigit1 + timeParts.decimalDigit2)
+                        .font(.system(size: 88, weight: .light, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(timeColor)
+                }
             }
         }
         .shadow(color: timeColor.opacity(0.3), radius: 20, x: 0, y: 0)

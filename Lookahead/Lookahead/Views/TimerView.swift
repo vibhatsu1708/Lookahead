@@ -206,44 +206,6 @@ struct TimerView: View {
     private var solveActionButtons: some View {
         VStack(spacing: 20) {
             HStack(spacing: 16) {
-                // Flag
-                SolveActionButton(
-                    icon: viewModel.isLastSolveFlagged ? "flag.fill" : "flag",
-                    isSelected: viewModel.isLastSolveFlagged,
-                    color: .yellow
-                ) {
-                    viewModel.toggleFlag(context: viewContext)
-                }
-                
-                // +2
-                SolveActionButton(
-                    icon: "plus.circle",
-                    label: "+2",
-                    isSelected: viewModel.lastSolvePenalty == .plusTwo,
-                    color: .orange
-                ) {
-                    viewModel.togglePenalty(.plusTwo, context: viewContext)
-                }
-                
-                // DNF
-                SolveActionButton(
-                    icon: "xmark.circle",
-                    label: "DNF",
-                    isSelected: viewModel.lastSolvePenalty == .dnf,
-                    color: .red
-                ) {
-                    viewModel.togglePenalty(.dnf, context: viewContext)
-                }
-                
-                // Comment
-                SolveActionButton(
-                    icon: viewModel.lastSolveHasComment ? "text.bubble.fill" : "text.bubble",
-                    isSelected: viewModel.lastSolveHasComment,
-                    color: .blue
-                ) {
-                    showingCommentSheet = true
-                }
-                
                 // Delete
                 SolveActionButton(
                     icon: "trash",
@@ -253,6 +215,42 @@ struct TimerView: View {
                     if viewModel.deleteLastSolve(context: viewContext) {
                         sessionManager.refreshSessions()
                     }
+                }
+                
+                // +2
+                SolveActionButton(
+                    icon: "02.circle",
+                    isSelected: viewModel.lastSolvePenalty == .plusTwo,
+                    color: .orange
+                ) {
+                    viewModel.togglePenalty(.plusTwo, context: viewContext)
+                }
+                
+                // DNF
+                SolveActionButton(
+                    icon: "xmark.circle",
+                    isSelected: viewModel.lastSolvePenalty == .dnf,
+                    color: .red
+                ) {
+                    viewModel.togglePenalty(.dnf, context: viewContext)
+                }
+                
+                // Flag
+                SolveActionButton(
+                    icon: viewModel.isLastSolveFlagged ? "flag.fill" : "flag",
+                    isSelected: viewModel.isLastSolveFlagged,
+                    color: .yellow
+                ) {
+                    viewModel.toggleFlag(context: viewContext)
+                }
+                
+                // Comment
+                SolveActionButton(
+                    icon: viewModel.lastSolveHasComment ? "text.bubble.fill" : "text.bubble",
+                    isSelected: viewModel.lastSolveHasComment,
+                    color: .blue
+                ) {
+                    showingCommentSheet = true
                 }
             }
             
@@ -276,28 +274,37 @@ struct TimerView: View {
     
     private func handleTouchDown() {
         switch viewModel.timerState {
+        case .stopped:
+            // When stopped, a new touch resets the timer and starts the hold process for the next solve
+            viewModel.resetToIdle()
+            startHoldCheck()
+            
         case .idle:
-            // Start holding to prepare
-            if holdStartTime == nil {
-                holdStartTime = Date()
-                isHolding = true
-                
-                // Check if held long enough after threshold
-                DispatchQueue.main.asyncAfter(deadline: .now() + holdThreshold) {
-                    if isHolding, let startTime = holdStartTime,
-                       Date().timeIntervalSince(startTime) >= holdThreshold {
-                        viewModel.prepareTimer()
-                    }
-                }
-            }
+            startHoldCheck()
             
         case .running:
             // Stop the timer immediately on touch
             viewModel.stopTimer(context: viewContext, session: sessionManager.currentSession)
             sessionManager.refreshSessions()
             
-        case .ready, .stopped:
+        case .ready:
             break
+        }
+    }
+    
+    private func startHoldCheck() {
+        // Start holding to prepare
+        if holdStartTime == nil {
+            holdStartTime = Date()
+            isHolding = true
+            
+            // Check if held long enough after threshold
+            DispatchQueue.main.asyncAfter(deadline: .now() + holdThreshold) {
+                if isHolding, let startTime = holdStartTime,
+                   Date().timeIntervalSince(startTime) >= holdThreshold {
+                    viewModel.prepareTimer()
+                }
+            }
         }
     }
     
@@ -307,11 +314,7 @@ struct TimerView: View {
             // Start the timer when released after being ready
             viewModel.startTimer()
             
-        case .stopped:
-            // Go back to idle for next solve
-            viewModel.resetToIdle()
-            
-        case .idle, .running:
+        case .stopped, .idle, .running:
             break
         }
         
@@ -325,32 +328,16 @@ struct TimerView: View {
 
 struct SolveActionButton: View {
     let icon: String
-    var label: String? = nil
     let isSelected: Bool
     let color: Color
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.system(size: 20, weight: .medium))
-                
-                if let label = label {
-                    Text(label)
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                }
-            }
-            .foregroundStyle(isSelected ? .white : color)
-            .frame(width: 52, height: 52)
-            .background(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(isSelected ? color : color.opacity(0.15))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .strokeBorder(color.opacity(isSelected ? 0 : 0.3), lineWidth: 1)
-                    )
-            )
+            Image(systemName: icon)
+                .font(.system(size: 24, weight: .medium))
+                .foregroundStyle(isSelected ? color : .white)
+                .frame(width: 44, height: 44)
         }
         .buttonStyle(.plain)
     }
