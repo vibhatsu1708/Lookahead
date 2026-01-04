@@ -15,6 +15,7 @@ struct MainTabView: View {
     enum Tab {
         case timer
         case history
+        case stats
     }
     
     init() {
@@ -36,6 +37,12 @@ struct MainTabView: View {
                     Label("History", systemImage: "clock.arrow.circlepath")
                 }
                 .tag(Tab.history)
+            
+            StatsView(sessionManager: sessionManager)
+                .tabItem {
+                    Label("Stats", systemImage: "chart.xyaxis.line")
+                }
+                .tag(Tab.stats)
         }
         .tint(.white)
     }
