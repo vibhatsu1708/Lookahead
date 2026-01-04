@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import Combine
+import CoreData
 
 enum TimerState {
     case idle
@@ -23,9 +23,12 @@ class TimerViewModel: ObservableObject {
     @Published var timerState: TimerState = .idle
     @Published var elapsedTime: TimeInterval = 0
     @Published var lastSolveTime: TimeInterval? = nil
+    @Published var lastSolvePenalty: SolvePenalty = .none
     
     private var timer: Timer?
     private var startTime: Date?
+    private var lastScramble: String = ""
+    private(set) var lastSavedSolve: SolveEntity?
     
     init() {
         generateNewScramble()
@@ -42,16 +45,26 @@ class TimerViewModel: ObservableObject {
         generateNewScramble()
     }
     
+    /// Sync cube type with current session
+    func syncWithSession(_ session: SessionEntity?) {
+        if let session = session {
+            selectedCubeType = session.cubeTypeEnum
+            generateNewScramble()
+        }
+    }
+    
     // MARK: - Timer Controls
     
     func prepareTimer() {
         timerState = .ready
         elapsedTime = 0
+        lastSolvePenalty = .none
     }
     
     func startTimer() {
         timerState = .running
         startTime = Date()
+        lastScramble = currentScramble
         
         timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { [weak self] _ in
             Task { @MainActor in
@@ -61,7 +74,7 @@ class TimerViewModel: ObservableObject {
         }
     }
     
-    func stopTimer() {
+    func stopTimer(context: NSManagedObjectContext, session: SessionEntity?) {
         timer?.invalidate()
         timer = nil
         
@@ -70,13 +83,126 @@ class TimerViewModel: ObservableObject {
         }
         
         lastSolveTime = elapsedTime
+        lastSolvePenalty = .none
         timerState = .stopped
         startTime = nil
+        
+        // Save the solve to Core Data
+        saveSolve(context: context, session: session)
     }
     
     func resetToIdle() {
         timerState = .idle
+        lastSavedSolve = nil
+        lastSolvePenalty = .none
         generateNewScramble()
+    }
+    
+    // MARK: - Penalty Management
+    
+    func setPenalty(_ penalty: SolvePenalty, context: NSManagedObjectContext) {
+        lastSolvePenalty = penalty
+        
+        // Update the saved solve
+        if let solve = lastSavedSolve {
+            solve.penaltyType = penalty
+            do {
+                try context.save()
+            } catch {
+                print("Error updating penalty: \(error)")
+            }
+        }
+    }
+    
+    func togglePenalty(_ penalty: SolvePenalty, context: NSManagedObjectContext) {
+        if lastSolvePenalty == penalty {
+            setPenalty(.none, context: context)
+        } else {
+            setPenalty(penalty, context: context)
+        }
+    }
+    
+    /// Display time with penalty applied
+    var displayTimeWithPenalty: String {
+        switch lastSolvePenalty {
+        case .none:
+            return formatTime(elapsedTime)
+        case .plusTwo:
+            return formatTime(elapsedTime + 2.0) + "+"
+        case .dnf:
+            return "DNF"
+        }
+    }
+    
+    // MARK: - Core Data
+    
+    private func saveSolve(context: NSManagedObjectContext, session: SessionEntity?) {
+        let solve = SolveEntity(context: context)
+        solve.id = UUID()
+        solve.time = elapsedTime
+        solve.scramble = lastScramble
+        solve.cubeType = selectedCubeType.rawValue
+        solve.date = Date()
+        solve.penalty = SolvePenalty.none.rawValue
+        solve.isFlagged = false
+        solve.comment = nil
+        solve.session = session
+        
+        lastSavedSolve = solve
+        
+        do {
+            try context.save()
+        } catch {
+            print("Error saving solve: \(error)")
+        }
+    }
+    
+    /// Delete the last saved solve and reset to idle
+    func deleteLastSolve(context: NSManagedObjectContext) -> Bool {
+        guard let solve = lastSavedSolve else { return false }
+        
+        context.delete(solve)
+        
+        do {
+            try context.save()
+            lastSavedSolve = nil
+            resetToIdle()
+            return true
+        } catch {
+            print("Error deleting solve: \(error)")
+            return false
+        }
+    }
+    
+    /// Check if there's a solve that can be deleted
+    var canDeleteLastSolve: Bool {
+        lastSavedSolve != nil && timerState == .stopped
+    }
+    
+    // MARK: - Flag Management
+    
+    var isLastSolveFlagged: Bool {
+        lastSavedSolve?.isFlagged ?? false
+    }
+    
+    func toggleFlag(context: NSManagedObjectContext) {
+        guard let solve = lastSavedSolve else { return }
+        
+        solve.isFlagged.toggle()
+        objectWillChange.send()
+        
+        do {
+            try context.save()
+        } catch {
+            print("Error toggling flag: \(error)")
+        }
+    }
+    
+    // MARK: - Comment Management
+    
+    var lastSolveHasComment: Bool {
+        guard let comment = lastSavedSolve?.comment else { return false }
+        return !comment.isEmpty
     }
     
     // MARK: - Time Formatting
@@ -92,7 +218,9 @@ class TimerViewModel: ObservableObject {
     }
     
     var displayTime: String {
-        formatTime(elapsedTime)
+        if timerState == .stopped {
+            return displayTimeWithPenalty
+        }
+        return formatTime(elapsedTime)
     }
 }
-

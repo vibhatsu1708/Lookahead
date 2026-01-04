@@ -7,59 +7,57 @@
 
 import Foundation
 
-/// Represents a single solve attempt
-struct Solve: Identifiable, Codable {
-    let id: UUID
-    let time: TimeInterval
-    let scramble: String
-    let cubeType: String
-    let date: Date
-    var penalty: SolvePenalty
-    var notes: String?
+enum SolvePenalty: String, Codable, CaseIterable {
+    case none = "OK"
+    case plusTwo = "+2"
+    case dnf = "DNF"
     
-    init(
-        id: UUID = UUID(),
-        time: TimeInterval,
-        scramble: String,
-        cubeType: CubeType,
-        date: Date = Date(),
-        penalty: SolvePenalty = .none,
-        notes: String? = nil
-    ) {
-        self.id = id
-        self.time = time
-        self.scramble = scramble
-        self.cubeType = cubeType.rawValue
-        self.date = date
-        self.penalty = penalty
-        self.notes = notes
+    var displayName: String {
+        switch self {
+        case .none: return "OK"
+        case .plusTwo: return "+2"
+        case .dnf: return "DNF"
+        }
+    }
+}
+
+// MARK: - SolveEntity Extensions
+
+extension SolveEntity {
+    var penaltyType: SolvePenalty {
+        get {
+            SolvePenalty(rawValue: penalty ?? "OK") ?? .none
+        }
+        set {
+            penalty = newValue.rawValue
+        }
     }
     
     /// The effective time including any penalty
     var effectiveTime: TimeInterval? {
-        switch penalty {
+        switch penaltyType {
         case .none:
             return time
         case .plusTwo:
             return time + 2.0
         case .dnf:
-            return nil // DNF has no time
+            return nil
         }
     }
     
     /// Formatted time string
     var formattedTime: String {
-        switch penalty {
+        switch penaltyType {
         case .dnf:
             return "DNF"
         case .plusTwo:
-            return formatTime(time + 2.0) + "+"
+            return formatTimeValue(time + 2.0) + "+"
         case .none:
-            return formatTime(time)
+            return formatTimeValue(time)
         }
     }
     
-    private func formatTime(_ time: TimeInterval) -> String {
+    private func formatTimeValue(_ time: TimeInterval) -> String {
         if time < 60 {
             return String(format: "%.2f", time)
         } else {
@@ -68,11 +66,13 @@ struct Solve: Identifiable, Codable {
             return String(format: "%d:%05.2f", minutes, seconds)
         }
     }
+    
+    /// Validates and sets comment (max 100 characters)
+    func setComment(_ text: String?) {
+        if let text = text {
+            comment = String(text.prefix(100))
+        } else {
+            comment = nil
+        }
+    }
 }
-
-enum SolvePenalty: String, Codable, CaseIterable {
-    case none = "OK"
-    case plusTwo = "+2"
-    case dnf = "DNF"
-}
-
