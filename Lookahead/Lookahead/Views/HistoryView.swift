@@ -54,6 +54,12 @@ struct HistoryView: View {
                 } else {
                     Color(red: 0.06, green: 0.06, blue: 0.08)
                         .ignoresSafeArea()
+                    
+                    BackgroundGradient(colors: [
+                        Color(red: 0.1, green: 0.08, blue: 0.15).opacity(0.6),
+                        Color.clear,
+                        Color(red: 0.08, green: 0.12, blue: 0.15).opacity(0.4)
+                    ], startPoint: .topLeading, endPoint: .bottomTrailing)
                 }
                 
                 VStack(spacing: 0) {

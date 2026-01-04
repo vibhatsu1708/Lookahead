@@ -93,15 +93,11 @@ struct TimerView: View {
                         .ignoresSafeArea()
                     
                     // Subtle gradient overlay
-                    LinearGradient(
-                        colors: [
-                            Color(red: 0.1, green: 0.08, blue: 0.15).opacity(0.6),
-                            Color.clear,
-                            Color(red: 0.08, green: 0.12, blue: 0.15).opacity(0.4)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
+                    BackgroundGradient(colors: [
+                        Color(red: 0.1, green: 0.08, blue: 0.15).opacity(0.6),
+                        Color.clear,
+                        Color(red: 0.08, green: 0.12, blue: 0.15).opacity(0.4)
+                    ], startPoint: .topLeading, endPoint: .bottomTrailing)
                 }
                 
                 // Ambient glow based on timer state
