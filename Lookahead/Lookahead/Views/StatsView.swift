@@ -16,6 +16,16 @@ struct StatsView: View {
     @State private var selectedCubeFilter: CubeType? = nil
     @State private var selectedSolve: SolveEntity? = nil
     
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \BackgroundImageEntity.createdAt, ascending: false)],
+        predicate: NSPredicate(format: "isCurrent == YES"),
+        animation: .default)
+    private var currentBackground: FetchedResults<BackgroundImageEntity>
+    
+    private var hasCustomBackground: Bool {
+        !currentBackground.isEmpty
+    }
+    
     private var currentSessionSolves: [SolveEntity] {
         sessionManager.currentSession?.solvesArray ?? []
     }
@@ -36,39 +46,53 @@ struct StatsView: View {
     }
     
     var body: some View {
-        ZStack {
-            // Background
-            Color(red: 0.06, green: 0.06, blue: 0.08)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                // Header
-                header
-                
-                // Session picker
-                sessionPickerRow
-                
-                // Filter chips
-                filterChips
-                
-                // Content
-                if filteredSolves.isEmpty {
-                    emptyState
+        GeometryReader { geometry in
+            ZStack {
+                // Background
+                if let activeBg = currentBackground.first,
+                   let data = activeBg.imageData,
+                   let uiImage = UIImage(data: data) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
+                        .ignoresSafeArea()
+                        .overlay(Color.black.opacity(0.4))
                 } else {
-                    ScrollView {
-                        VStack(spacing: 24) {
-                            // Stats summary
-                            statsSummary
-                            
-                            // Line chart
-                            lineChart
-                                .padding(.horizontal, 24)
-                            
-                            // Additional stats
-                            additionalStats
-                                .padding(.horizontal, 24)
+                    Color(red: 0.06, green: 0.06, blue: 0.08)
+                        .ignoresSafeArea()
+                }
+                
+                VStack(spacing: 0) {
+                    // Header
+                    header
+                    
+                    // Session picker
+                    sessionPickerRow
+                    
+                    // Filter chips
+                    filterChips
+                    
+                    // Content
+                    if filteredSolves.isEmpty {
+                        emptyState
+                    } else {
+                        ScrollView {
+                            VStack(spacing: 24) {
+                                // Stats summary
+                                statsSummary
+                                
+                                // Line chart
+                                lineChart
+                                    .padding(.horizontal, 24)
+                                
+                                // Additional stats
+                                additionalStats
+                                    .padding(.horizontal, 24)
+                            }
+                            .padding(.bottom, 100)
                         }
-                        .padding(.bottom, 100)
                     }
                 }
             }

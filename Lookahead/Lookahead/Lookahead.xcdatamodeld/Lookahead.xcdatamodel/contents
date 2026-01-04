@@ -18,4 +18,10 @@
         <attribute name="time" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionEntity" inverseName="solves" inverseEntity="SessionEntity"/>
     </entity>
+    <entity name="BackgroundImageEntity" representedClassName="BackgroundImageEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="imageData" attributeType="Binary" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="isCurrent" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+    </entity>
 </model>

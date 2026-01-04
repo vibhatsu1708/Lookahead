@@ -16,6 +16,16 @@ struct HistoryView: View {
     @State private var selectedSolve: SolveEntity? = nil
     @State private var isGridView = false
     
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \BackgroundImageEntity.createdAt, ascending: false)],
+        predicate: NSPredicate(format: "isCurrent == YES"),
+        animation: .default)
+    private var currentBackground: FetchedResults<BackgroundImageEntity>
+    
+    private var hasCustomBackground: Bool {
+        !currentBackground.isEmpty
+    }
+    
     private var currentSessionSolves: [SolveEntity] {
         sessionManager.currentSession?.solvesArray ?? []
     }
@@ -28,29 +38,43 @@ struct HistoryView: View {
     }
     
     var body: some View {
-        ZStack {
-            // Background
-            Color(red: 0.06, green: 0.06, blue: 0.08)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                // Header
-                header
-                
-                // Session picker
-                sessionPickerRow
-                
-                // Filter chips
-                filterChips
-                
-                // Solves list
-                if filteredSolves.isEmpty {
-                    emptyState
+        GeometryReader { geometry in
+            ZStack {
+                // Background
+                if let activeBg = currentBackground.first,
+                   let data = activeBg.imageData,
+                   let uiImage = UIImage(data: data) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
+                        .ignoresSafeArea()
+                        .overlay(Color.black.opacity(0.4))
                 } else {
-                    if isGridView {
-                        solvesGrid
+                    Color(red: 0.06, green: 0.06, blue: 0.08)
+                        .ignoresSafeArea()
+                }
+                
+                VStack(spacing: 0) {
+                    // Header
+                    header
+                    
+                    // Session picker
+                    sessionPickerRow
+                    
+                    // Filter chips
+                    filterChips
+                    
+                    // Solves list
+                    if filteredSolves.isEmpty {
+                        emptyState
                     } else {
-                        solvesList
+                        if isGridView {
+                            solvesGrid
+                        } else {
+                            solvesList
+                        }
                     }
                 }
             }

@@ -15,6 +15,16 @@ struct TimerView: View {
     @State private var isHolding = false
     @State private var showingCommentSheet = false
     
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \BackgroundImageEntity.createdAt, ascending: false)],
+        predicate: NSPredicate(format: "isCurrent == YES"),
+        animation: .default)
+    private var currentBackground: FetchedResults<BackgroundImageEntity>
+    
+    private var hasCustomBackground: Bool {
+        !currentBackground.isEmpty
+    }
+    
     // Minimum hold time to start (in seconds)
     private let holdThreshold: TimeInterval = 0.5
     
@@ -65,46 +75,61 @@ struct TimerView: View {
     // MARK: - Background
     
     private var backgroundGradient: some View {
-        ZStack {
-            // Base dark color
-            Color(red: 0.06, green: 0.06, blue: 0.08)
-            
-            // Subtle gradient overlay
-            LinearGradient(
-                colors: [
-                    Color(red: 0.1, green: 0.08, blue: 0.15).opacity(0.6),
-                    Color.clear,
-                    Color(red: 0.08, green: 0.12, blue: 0.15).opacity(0.4)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            
-            // Ambient glow based on timer state
-            if viewModel.timerState == .ready {
-                RadialGradient(
-                    colors: [
-                        Color(red: 0.2, green: 0.9, blue: 0.4).opacity(0.15),
-                        Color.clear
-                    ],
-                    center: .center,
-                    startRadius: 50,
-                    endRadius: 300
-                )
-                .transition(.opacity)
-            }
-            
-            if viewModel.timerState == .running {
-                RadialGradient(
-                    colors: [
-                        Color.white.opacity(0.08),
-                        Color.clear
-                    ],
-                    center: .center,
-                    startRadius: 50,
-                    endRadius: 400
-                )
-                .transition(.opacity)
+        GeometryReader { geometry in
+            ZStack {
+                // Background Image or Base Color
+                if let activeBg = currentBackground.first,
+                   let data = activeBg.imageData,
+                   let uiImage = UIImage(data: data) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
+                        .ignoresSafeArea()
+                        .overlay(Color.black.opacity(0.4))
+                } else {
+                    Color(red: 0.06, green: 0.06, blue: 0.08)
+                        .ignoresSafeArea()
+                    
+                    // Subtle gradient overlay
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.1, green: 0.08, blue: 0.15).opacity(0.6),
+                            Color.clear,
+                            Color(red: 0.08, green: 0.12, blue: 0.15).opacity(0.4)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                }
+                
+                // Ambient glow based on timer state
+                if viewModel.timerState == .ready {
+                    RadialGradient(
+                        colors: [
+                            Color(red: 0.2, green: 0.9, blue: 0.4).opacity(0.15),
+                            Color.clear
+                        ],
+                        center: .center,
+                        startRadius: 50,
+                        endRadius: 300
+                    )
+                    .transition(.opacity)
+                }
+                
+                if viewModel.timerState == .running {
+                    RadialGradient(
+                        colors: [
+                            Color.white.opacity(0.08),
+                            Color.clear
+                        ],
+                        center: .center,
+                        startRadius: 50,
+                        endRadius: 400
+                    )
+                    .transition(.opacity)
+                }
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.timerState)
@@ -118,18 +143,6 @@ struct TimerView: View {
                 SessionPicker(sessionManager: sessionManager)
                 
                 Spacer()
-                
-                // Settings button placeholder
-                Button(action: {}) {
-                    Image(systemName: "gearshape.fill")
-                        .font(.system(size: 20, weight: .medium))
-                        .foregroundStyle(.white.opacity(0.5))
-                        .frame(width: 44, height: 44)
-                        .background(
-                            Circle()
-                                .fill(.white.opacity(0.06))
-                        )
-                }
             }
             
             // Cube type picker (synced with session)

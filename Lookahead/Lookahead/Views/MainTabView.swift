@@ -16,6 +16,7 @@ struct MainTabView: View {
         case timer
         case history
         case stats
+        case settings
     }
     
     init() {
@@ -43,6 +44,12 @@ struct MainTabView: View {
                     Label("Stats", systemImage: "chart.xyaxis.line")
                 }
                 .tag(Tab.stats)
+            
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
+                .tag(Tab.settings)
         }
         .tint(.white)
     }

@@ -7,16 +7,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "BC45C1C3-31F9-4F87-A9C3-3D62A938FBB8"
+            uuid = "F5D80C54-3D40-482F-86B8-01A8ADFC1DEA"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Lookahead/Views/TimerView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "177"
-            endingLineNumber = "177"
-            landmarkName = "centerContent"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
+            landmarkName = "backgroundGradient"
             landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
