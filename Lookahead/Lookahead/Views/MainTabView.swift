@@ -60,6 +60,7 @@ struct MainTabView: View {
 struct CustomTabBar: View {
     @Binding var selectedTab: MainTabView.Tab
     @Namespace private var animation
+    @ObservedObject var themeManager = ThemeManager.shared
     
     // Tab definitions for iteration
     private let tabs: [(MainTabView.Tab, String, String)] = [
@@ -98,7 +99,7 @@ struct CustomTabBar: View {
                     .padding(.vertical, 12)
                     .contentShape(Rectangle())
                 }
-                .foregroundStyle(selectedTab == tab ? .white : .white.opacity(0.5))
+                .foregroundStyle(selectedTab == tab ? themeManager.colors.light : themeManager.colors.light.opacity(0.5))
             }
         }
         .background(
@@ -108,12 +109,12 @@ struct CustomTabBar: View {
                     Rectangle()
                         .fill(.ultraThinMaterial)
                 } else {
-                     Color(red: 0.1, green: 0.1, blue: 0.12).opacity(0.9)
+                     themeManager.colors.dark.opacity(0.9)
                 }
                 
                 // Border/Glow overlay
                 Capsule()
-                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
+                    .strokeBorder(themeManager.colors.light.opacity(0.1), lineWidth: 1)
             }
             .clipShape(Capsule())
             .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)

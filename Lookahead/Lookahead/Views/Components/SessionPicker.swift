@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SessionPicker: View {
     @ObservedObject var sessionManager: SessionManager
+    @ObservedObject var themeManager = ThemeManager.shared
     @State private var showingSessionList = false
     @State private var showingNewSession = false
     
@@ -53,6 +54,7 @@ struct SessionPicker: View {
 struct SessionListSheet: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var sessionManager: SessionManager
+    @ObservedObject var themeManager = ThemeManager.shared
     @Binding var showingNewSession: Bool
     
     @State private var sessionToRename: SessionEntity?
@@ -61,8 +63,7 @@ struct SessionListSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(red: 0.06, green: 0.06, blue: 0.08)
-                    .ignoresSafeArea()
+                themeManager.colors.complexGradient
                 
                 ScrollView {
                     LazyVStack(spacing: 12) {
@@ -95,7 +96,7 @@ struct SessionListSheet: View {
                     Button("Done") {
                         dismiss()
                     }
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.7))
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -110,7 +111,7 @@ struct SessionListSheet: View {
                     }
                 }
             }
-            .toolbarBackground(Color(red: 0.06, green: 0.06, blue: 0.08), for: .navigationBar)
+            .toolbarBackground(themeManager.colors.darkest, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .alert("Rename Session", isPresented: .init(
                 get: { sessionToRename != nil },
@@ -141,6 +142,7 @@ struct SessionRow: View {
     let onRename: () -> Void
     let onDelete: () -> Void
     let canDelete: Bool
+    @ObservedObject var themeManager = ThemeManager.shared
     
     private var formattedDate: String {
         guard let date = session.createdAt else { return "" }
@@ -176,16 +178,16 @@ struct SessionRow: View {
                     HStack {
                         Text(session.name ?? "Untitled")
                             .font(.system(size: 17, weight: .semibold, design: .rounded))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(themeManager.colors.light)
                         
                         Text(session.cubeTypeEnum.displayName)
                             .font(.system(size: 12, weight: .semibold, design: .rounded))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .foregroundStyle(themeManager.colors.light.opacity(0.5))
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
                             .background(
                                 Capsule()
-                                    .fill(.white.opacity(0.1))
+                                    .fill(themeManager.colors.light.opacity(0.1))
                             )
                     }
                     
@@ -197,7 +199,7 @@ struct SessionRow: View {
                         }
                     }
                     .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.4))
                 }
                 
                 Spacer()
@@ -205,10 +207,10 @@ struct SessionRow: View {
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(isSelected ? .white.opacity(0.1) : .white.opacity(0.05))
+                    .fill(isSelected ? themeManager.colors.light.opacity(0.1) : themeManager.colors.light.opacity(0.05))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .strokeBorder(isSelected ? .white.opacity(0.2) : .clear, lineWidth: 1)
+                            .strokeBorder(isSelected ? themeManager.colors.light.opacity(0.2) : .clear, lineWidth: 1)
                     )
             )
         }
@@ -236,6 +238,7 @@ struct SessionRow: View {
 struct NewSessionSheet: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var sessionManager: SessionManager
+    @ObservedObject var themeManager = ThemeManager.shared
     
     @State private var sessionName: String = ""
     @State private var selectedCubeType: CubeType = .threeByThree
@@ -251,18 +254,18 @@ struct NewSessionSheet: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Label("Session Name", systemImage: "textformat")
                             .font(.system(size: 14, weight: .semibold, design: .rounded))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .foregroundStyle(themeManager.colors.light.opacity(0.5))
                         
                         TextField("e.g., Practice, Competition", text: $sessionName)
                             .font(.system(size: 16, weight: .medium, design: .rounded))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(themeManager.colors.light)
                             .padding(16)
                             .background(
                                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                    .fill(.white.opacity(0.05))
+                                    .fill(themeManager.colors.light.opacity(0.05))
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                            .strokeBorder(.white.opacity(0.1), lineWidth: 1)
+                                            .strokeBorder(themeManager.colors.light.opacity(0.1), lineWidth: 1)
                                     )
                             )
                     }
@@ -271,7 +274,7 @@ struct NewSessionSheet: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Label("Cube Type", systemImage: "cube")
                             .font(.system(size: 14, weight: .semibold, design: .rounded))
-                            .foregroundStyle(.white.opacity(0.5))
+                            .foregroundStyle(themeManager.colors.light.opacity(0.5))
                         
                         LazyVGrid(columns: [
                             GridItem(.flexible()),
@@ -300,7 +303,7 @@ struct NewSessionSheet: View {
                     Button("Cancel") {
                         dismiss()
                     }
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.7))
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -312,7 +315,7 @@ struct NewSessionSheet: View {
                     .fontWeight(.semibold)
                 }
             }
-            .toolbarBackground(Color(red: 0.06, green: 0.06, blue: 0.08), for: .navigationBar)
+            .toolbarBackground(themeManager.colors.darkest, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
         }
         .preferredColorScheme(.dark)
@@ -325,17 +328,18 @@ struct CubeTypeChip: View {
     let cubeType: CubeType
     let isSelected: Bool
     let action: () -> Void
+    @ObservedObject var themeManager = ThemeManager.shared
     
     var body: some View {
         Button(action: action) {
             Text(cubeType.displayName)
                 .font(.system(size: 14, weight: .semibold, design: .rounded))
-                .foregroundStyle(isSelected ? .black : .white.opacity(0.7))
+                .foregroundStyle(isSelected ? themeManager.colors.dark : themeManager.colors.light.opacity(0.7))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(isSelected ? .white : .white.opacity(0.08))
+                        .fill(isSelected ? themeManager.colors.light : themeManager.colors.light.opacity(0.08))
                 )
         }
         .buttonStyle(.plain)

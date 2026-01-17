@@ -14,6 +14,7 @@ struct TimerView: View {
     @State private var holdStartTime: Date?
     @State private var isHolding = false
     @State private var showingCommentSheet = false
+    @ObservedObject var themeManager = ThemeManager.shared
     
     @AppStorage("hideTimer") private var hideTimer = false
     @AppStorage("inspectionEnabled") private var inspectionEnabled = false
@@ -77,15 +78,8 @@ struct TimerView: View {
     private var backgroundGradient: some View {
         GeometryReader { geometry in
             ZStack {
-                Color(red: 0.06, green: 0.06, blue: 0.08)
-                    .ignoresSafeArea()
-                
-                // Subtle gradient overlay
-                BackgroundGradient(colors: [
-                    Color(red: 0.1, green: 0.08, blue: 0.15).opacity(0.6),
-                    Color.clear,
-                    Color(red: 0.08, green: 0.12, blue: 0.15).opacity(0.4)
-                ], startPoint: .topLeading, endPoint: .bottomTrailing)
+                // Dynamic Theme Background
+                themeManager.colors.complexGradient
                 
                 // Ambient glow based on timer state
                 if viewModel.timerState == .ready {
@@ -117,7 +111,7 @@ struct TimerView: View {
                 if viewModel.timerState == .running {
                     RadialGradient(
                         colors: [
-                            Color.white.opacity(0.08),
+                            themeManager.colors.light.opacity(0.08),
                             Color.clear
                         ],
                         center: .center,
@@ -181,7 +175,7 @@ struct TimerView: View {
                 // Show "Solving..." or similar visual when hidden
                 Text("Solving...")
                     .font(.system(size: 24, weight: .light, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.3))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.3))
             }
             
             // Timer display
@@ -221,7 +215,7 @@ struct TimerView: View {
             }
         }
         .font(.system(size: 15, weight: .medium, design: .rounded))
-        .foregroundStyle(.white.opacity(0.4))
+        .foregroundStyle(themeManager.colors.light.opacity(0.4))
         .animation(.easeInOut(duration: 0.2), value: viewModel.timerState)
     }
     
@@ -280,7 +274,7 @@ struct TimerView: View {
             
             Text("Tap anywhere for next solve")
                 .font(.system(size: 14, weight: .medium, design: .rounded))
-                .foregroundStyle(.white.opacity(0.4))
+                .foregroundStyle(themeManager.colors.light.opacity(0.4))
         }
     }
     
@@ -377,6 +371,7 @@ struct CommentSheet: View {
     @Environment(\.dismiss) private var dismiss
     
     @ObservedObject var solve: SolveEntity
+    @ObservedObject var themeManager = ThemeManager.shared
     @State private var comment: String = ""
     
     private let maxCommentLength = 100
@@ -389,8 +384,7 @@ struct CommentSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(red: 0.06, green: 0.06, blue: 0.08)
-                    .ignoresSafeArea()
+                themeManager.colors.complexGradient
                 
                 VStack(spacing: 20) {
                     // Character count
@@ -398,21 +392,21 @@ struct CommentSheet: View {
                         Spacer()
                         Text("\(comment.count)/\(maxCommentLength)")
                             .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundStyle(comment.count >= maxCommentLength ? .orange : .white.opacity(0.3))
+                            .foregroundStyle(comment.count >= maxCommentLength ? .orange : themeManager.colors.light.opacity(0.3))
                     }
                     
                     // Text field
                     TextField("Add a comment...", text: $comment, axis: .vertical)
                         .font(.system(size: 16, weight: .medium, design: .rounded))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(themeManager.colors.light)
                         .lineLimit(4...6)
                         .padding(16)
                         .background(
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .fill(.white.opacity(0.05))
+                                .fill(themeManager.colors.light.opacity(0.05))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                        .strokeBorder(.white.opacity(0.1), lineWidth: 1)
+                                        .strokeBorder(themeManager.colors.light.opacity(0.1), lineWidth: 1)
                                 )
                         )
                         .onChange(of: comment) { _, newValue in
@@ -432,7 +426,7 @@ struct CommentSheet: View {
                     Button("Cancel") {
                         dismiss()
                     }
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.7))
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -444,7 +438,7 @@ struct CommentSheet: View {
                     .fontWeight(.semibold)
                 }
             }
-            .toolbarBackground(Color(red: 0.06, green: 0.06, blue: 0.08), for: .navigationBar)
+            .toolbarBackground(themeManager.colors.darkest, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
         }
         .presentationDetents([.height(250)])

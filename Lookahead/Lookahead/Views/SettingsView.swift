@@ -7,56 +7,78 @@
 
 import SwiftUI
 
-
 struct SettingsView: View {
     @Environment(\.managedObjectContext) private var viewContext
-
+    @ObservedObject var themeManager = ThemeManager.shared
     
     @AppStorage("hideTimer") private var hideTimer = false
     @AppStorage("inspectionEnabled") private var inspectionEnabled = false
-    
-
     
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
                 ZStack {
-                    Color(red: 0.06, green: 0.06, blue: 0.08)
-                        .ignoresSafeArea()
-                    
-                    BackgroundGradient(colors: [
-                        Color(red: 0.1, green: 0.08, blue: 0.15).opacity(0.6),
-                        Color.clear,
-                        Color(red: 0.08, green: 0.12, blue: 0.15).opacity(0.4)
-                    ], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    // Dynamic Theme Background
+                    themeManager.colors.complexGradient
                     
                     List {
-
+                        // Theme Picker Section
+                        Section {
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 44), spacing: 20)], spacing: 20) {
+                                ForEach(AppTheme.allCases) { theme in
+                                    Button {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            themeManager.setTheme(theme)
+                                        }
+                                    } label: {
+                                        ZStack {
+                                            Circle()
+                                                .fill(theme.colors.backgroundGradient)
+                                                .frame(width: 44, height: 44)
+                                                .shadow(color: .black.opacity(0.3), radius: 3)
+                                            
+                                            // Selection Ring
+                                            if themeManager.currentTheme == theme {
+                                                Circle()
+                                                    .strokeBorder(Color.white, lineWidth: 2)
+                                                    .frame(width: 50, height: 50)
+                                            }
+                                        }
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                            .padding(.vertical, 8)
+                        } header: {
+                            Text("Theme")
+                                .foregroundStyle(themeManager.colors.light.opacity(0.8))
+                        }
+                        .listRowBackground(Color.clear) // Transparent row for grid
                         
+                        // Timer Settings
                         Section {
                             Toggle(isOn: $hideTimer) {
                                 HStack {
                                     Image(systemName: "eye.slash.fill")
-                                        .foregroundStyle(.purple)
+                                        .foregroundStyle(themeManager.colors.medium)
                                     Text("Hide Timer While Solving")
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(themeManager.colors.light)
                                 }
                             }
                             
                             Toggle(isOn: $inspectionEnabled) {
                                 HStack {
                                     Image(systemName: "stopwatch.fill")
-                                        .foregroundStyle(.orange)
+                                        .foregroundStyle(themeManager.colors.medium)
                                     Text("Inspection Time (15s)")
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(themeManager.colors.light)
                                 }
                             }
                         } header: {
                             Text("Timer")
+                                .foregroundStyle(themeManager.colors.light.opacity(0.8))
                         }
-                        .listRowBackground(Color.white.opacity(0.05))
-                        
-                        .listRowBackground(Color.white.opacity(0.05))
+                        .listRowBackground(themeManager.colors.darkest.opacity(0.3))
                     }
                     .scrollContentBackground(.hidden)
                     .navigationTitle("Settings")

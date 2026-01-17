@@ -12,6 +12,7 @@ import CoreData
 struct StatsView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var sessionManager: SessionManager
+    @ObservedObject var themeManager = ThemeManager.shared
     
     @State private var selectedCubeFilter: CubeType? = nil
     @State private var selectedSolve: SolveEntity? = nil
@@ -41,14 +42,7 @@ struct StatsView: View {
         GeometryReader { geometry in
             ZStack {
                 // Background
-                Color(red: 0.06, green: 0.06, blue: 0.08)
-                    .ignoresSafeArea()
-                
-                BackgroundGradient(colors: [
-                    Color(red: 0.1, green: 0.08, blue: 0.15).opacity(0.6),
-                    Color.clear,
-                    Color(red: 0.08, green: 0.12, blue: 0.15).opacity(0.4)
-                ], startPoint: .topLeading, endPoint: .bottomTrailing)
+                themeManager.colors.complexGradient
                 
                 VStack(spacing: 0) {
                     // Header
@@ -96,11 +90,11 @@ struct StatsView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Stats")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(themeManager.colors.light)
                 
                 Text("\(currentSessionSolves.count) solves")
                     .font(.system(size: 14, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.5))
             }
             
             Spacer()
@@ -165,7 +159,7 @@ struct StatsView: View {
                     )
                     .foregroundStyle(
                         LinearGradient(
-                            colors: [Color(red: 0.4, green: 0.6, blue: 1.0), Color(red: 0.2, green: 0.9, blue: 0.4)],
+                            colors: [themeManager.colors.medium, themeManager.colors.light],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -176,7 +170,7 @@ struct StatsView: View {
                         x: .value("Solve", index + 1),
                         y: .value("Time", solve.effectiveTime ?? 0)
                     )
-                    .foregroundStyle(solve.penaltyType == .plusTwo ? Color.orange : Color(red: 0.4, green: 0.6, blue: 1.0))
+                    .foregroundStyle(solve.penaltyType == .plusTwo ? Color.orange : themeManager.colors.medium)
                     .symbolSize(60)
                 }
                 
@@ -234,7 +228,7 @@ struct StatsView: View {
                     AxisTick()
                         .foregroundStyle(.white.opacity(0.3))
                     AxisValueLabel()
-                        .foregroundStyle(.white.opacity(0.6))
+                        .foregroundStyle(themeManager.colors.light.opacity(0.6))
                         .font(.system(size: 11, weight: .medium, design: .rounded))
                 }
             }
@@ -296,11 +290,11 @@ struct StatsView: View {
             
             Text("No stats yet")
                 .font(.system(size: 20, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white.opacity(0.4))
+                .foregroundStyle(themeManager.colors.light.opacity(0.4))
             
             Text("Complete solves to see statistics")
                 .font(.system(size: 14, weight: .medium, design: .rounded))
-                .foregroundStyle(.white.opacity(0.3))
+                .foregroundStyle(themeManager.colors.light.opacity(0.3))
             
             Spacer()
         }

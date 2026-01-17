@@ -12,6 +12,8 @@ struct TimerDisplayView: View {
     let state: TimerState
     var shimmerDirection: ShimmerDirection = .leftToRight
     
+    @ObservedObject var themeManager = ThemeManager.shared
+    
     private var isTimerActive: Bool {
         state == .running
     }
@@ -19,11 +21,11 @@ struct TimerDisplayView: View {
     private var timeColor: Color {
         switch state {
         case .idle:
-            return .white.opacity(0.3)
+            return themeManager.colors.light.opacity(0.3)
         case .ready:
             return Color(red: 0.2, green: 0.9, blue: 0.4) // Bright green
         case .running:
-            return .white
+            return themeManager.colors.light
         case .stopped:
             return Color(red: 1.0, green: 0.85, blue: 0.3) // Golden yellow
         case .inspection:

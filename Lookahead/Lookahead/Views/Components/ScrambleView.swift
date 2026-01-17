@@ -13,13 +13,14 @@ struct ScrambleView: View {
     var onRefresh: (() -> Void)?
     
     @State private var isAnimating = false
+    @ObservedObject var themeManager = ThemeManager.shared
     
     var body: some View {
         VStack(spacing: 16) {
             // Scramble text
             Text(scramble)
                 .font(.system(size: 15, weight: .medium, design: .monospaced))
-                .foregroundStyle(.white)
+                .foregroundStyle(themeManager.colors.light)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
                 .padding(.horizontal, 14)
@@ -46,12 +47,12 @@ struct ScrambleView: View {
                         Text("New Scramble")
                             .font(.system(size: 14, weight: .semibold, design: .rounded))
                     }
-                    .foregroundStyle(.white.opacity(0.6))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.6))
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
                     .background(
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(.white.opacity(0.08))
+                            .fill(themeManager.colors.light.opacity(0.08))
                     )
                 }
                 .buttonStyle(.plain)

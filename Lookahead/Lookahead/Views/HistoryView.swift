@@ -11,6 +11,7 @@ import CoreData
 struct HistoryView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var sessionManager: SessionManager
+    @ObservedObject var themeManager = ThemeManager.shared
     
     @State private var selectedCubeFilter: CubeType? = nil
     @State private var selectedSolve: SolveEntity? = nil
@@ -33,14 +34,7 @@ struct HistoryView: View {
         GeometryReader { geometry in
             ZStack {
                 // Background
-                Color(red: 0.06, green: 0.06, blue: 0.08)
-                    .ignoresSafeArea()
-                
-                BackgroundGradient(colors: [
-                    Color(red: 0.1, green: 0.08, blue: 0.15).opacity(0.6),
-                    Color.clear,
-                    Color(red: 0.08, green: 0.12, blue: 0.15).opacity(0.4)
-                ], startPoint: .topLeading, endPoint: .bottomTrailing)
+                themeManager.colors.complexGradient
                 
                 VStack(spacing: 0) {
                     // Header
@@ -78,11 +72,11 @@ struct HistoryView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("History")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(themeManager.colors.light)
                 
                 Text("\(currentSessionSolves.count) solves")
                     .font(.system(size: 14, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.5))
             }
             
             Spacer()
@@ -95,11 +89,11 @@ struct HistoryView: View {
             } label: {
                 Image(systemName: isGridView ? "list.bullet" : "square.grid.2x2")
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.8))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.8))
                     .frame(width: 44, height: 44)
                     .background(
                         Circle()
-                            .fill(.white.opacity(0.1))
+                            .fill(themeManager.colors.light.opacity(0.1))
                     )
             }
         }
@@ -159,11 +153,11 @@ struct HistoryView: View {
             
             Text("No solves yet")
                 .font(.system(size: 20, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white.opacity(0.4))
+                .foregroundStyle(themeManager.colors.light.opacity(0.4))
             
             Text("Complete a solve to see it here")
                 .font(.system(size: 14, weight: .medium, design: .rounded))
-                .foregroundStyle(.white.opacity(0.3))
+                .foregroundStyle(themeManager.colors.light.opacity(0.3))
             
             Spacer()
         }

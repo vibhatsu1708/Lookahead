@@ -12,6 +12,7 @@ struct SolveDetailSheet: View {
     @Environment(\.dismiss) private var dismiss
     
     @ObservedObject var solve: SolveEntity
+    @ObservedObject var themeManager = ThemeManager.shared
     
     @State private var comment: String = ""
     @State private var isFlagged: Bool = false
@@ -29,8 +30,7 @@ struct SolveDetailSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(red: 0.06, green: 0.06, blue: 0.08)
-                    .ignoresSafeArea()
+                themeManager.colors.complexGradient
                 
                 ScrollView {
                     VStack(spacing: 24) {
@@ -62,7 +62,7 @@ struct SolveDetailSheet: View {
                     Button("Cancel") {
                         dismiss()
                     }
-                    .foregroundStyle(.white.opacity(0.7))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.7))
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -73,7 +73,7 @@ struct SolveDetailSheet: View {
                     .fontWeight(.semibold)
                 }
             }
-            .toolbarBackground(Color(red: 0.06, green: 0.06, blue: 0.08), for: .navigationBar)
+            .toolbarBackground(themeManager.colors.darkest, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
         }
         .preferredColorScheme(.dark)
@@ -91,7 +91,7 @@ struct SolveDetailSheet: View {
             if selectedPenalty != .none {
                 Text("Original: \(formatTimeValue(solve.time))")
                     .font(.system(size: 14, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.4))
             }
         }
         .frame(maxWidth: .infinity)
@@ -104,16 +104,16 @@ struct SolveDetailSheet: View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Scramble", systemImage: "cube")
                 .font(.system(size: 14, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(themeManager.colors.light.opacity(0.5))
             
             Text(solve.scramble ?? "")
                 .font(.system(size: 15, weight: .medium, design: .monospaced))
-                .foregroundStyle(.white.opacity(0.9))
+                .foregroundStyle(themeManager.colors.light.opacity(0.9))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(16)
                 .background(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(.white.opacity(0.05))
+                        .fill(themeManager.colors.light.opacity(0.05))
                 )
         }
     }
@@ -124,7 +124,7 @@ struct SolveDetailSheet: View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Penalty", systemImage: "exclamationmark.triangle")
                 .font(.system(size: 14, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(themeManager.colors.light.opacity(0.5))
             
             HStack(spacing: 10) {
                 ForEach(SolvePenalty.allCases, id: \.self) { penalty in
@@ -148,7 +148,7 @@ struct SolveDetailSheet: View {
         HStack {
             Label("Flag this solve", systemImage: isFlagged ? "flag.fill" : "flag")
                 .font(.system(size: 15, weight: .medium, design: .rounded))
-                .foregroundStyle(isFlagged ? .yellow : .white.opacity(0.7))
+                .foregroundStyle(isFlagged ? .yellow : themeManager.colors.light.opacity(0.7))
             
             Spacer()
             
@@ -158,7 +158,7 @@ struct SolveDetailSheet: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.white.opacity(0.05))
+                .fill(themeManager.colors.light.opacity(0.05))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
                         .strokeBorder(isFlagged ? .yellow.opacity(0.3) : .clear, lineWidth: 1)
@@ -173,18 +173,18 @@ struct SolveDetailSheet: View {
             HStack {
                 Label("Comment", systemImage: "text.bubble")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.5))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.5))
                 
                 Spacer()
                 
                 Text("\(comment.count)/\(maxCommentLength)")
                     .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundStyle(comment.count >= maxCommentLength ? .orange : .white.opacity(0.3))
+                    .foregroundStyle(comment.count >= maxCommentLength ? .orange : themeManager.colors.light.opacity(0.3))
             }
             
             TextField("Add a note...", text: $comment, axis: .vertical)
                 .font(.system(size: 15, weight: .regular, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(themeManager.colors.light)
                 .lineLimit(3...5)
                 .padding(16)
                 .background(
@@ -212,7 +212,7 @@ struct SolveDetailSheet: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(.white.opacity(0.03))
+                .fill(themeManager.colors.light.opacity(0.03))
         )
     }
     
@@ -236,7 +236,7 @@ struct SolveDetailSheet: View {
         case .plusTwo:
             return .orange
         case .none:
-            return .white
+            return themeManager.colors.light
         }
     }
     
@@ -312,18 +312,19 @@ struct MetadataRow: View {
     let icon: String
     let label: String
     let value: String
+    @ObservedObject var themeManager = ThemeManager.shared
     
     var body: some View {
         HStack {
             Label(label, systemImage: icon)
                 .font(.system(size: 14, weight: .medium, design: .rounded))
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(themeManager.colors.light.opacity(0.5))
             
             Spacer()
             
             Text(value)
                 .font(.system(size: 14, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white.opacity(0.8))
+                .foregroundStyle(themeManager.colors.light.opacity(0.8))
         }
     }
 }
