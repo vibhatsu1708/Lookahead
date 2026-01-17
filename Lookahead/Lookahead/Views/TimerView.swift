@@ -18,15 +18,7 @@ struct TimerView: View {
     @AppStorage("hideTimer") private var hideTimer = false
     @AppStorage("inspectionEnabled") private var inspectionEnabled = false
     
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \BackgroundImageEntity.createdAt, ascending: false)],
-        predicate: NSPredicate(format: "isCurrent == YES"),
-        animation: .default)
-    private var currentBackground: FetchedResults<BackgroundImageEntity>
-    
-    private var hasCustomBackground: Bool {
-        !currentBackground.isEmpty
-    }
+
     
     // Minimum hold time to start (in seconds)
     private let holdThreshold: TimeInterval = 0.5
@@ -85,28 +77,15 @@ struct TimerView: View {
     private var backgroundGradient: some View {
         GeometryReader { geometry in
             ZStack {
-                // Background Image or Base Color
-                if let activeBg = currentBackground.first,
-                   let data = activeBg.imageData,
-                   let uiImage = UIImage(data: data) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: geometry.size.width, height: geometry.size.height)
-                        .clipped()
-                        .ignoresSafeArea()
-                        .overlay(Color.black.opacity(0.4))
-                } else {
-                    Color(red: 0.06, green: 0.06, blue: 0.08)
-                        .ignoresSafeArea()
-                    
-                    // Subtle gradient overlay
-                    BackgroundGradient(colors: [
-                        Color(red: 0.1, green: 0.08, blue: 0.15).opacity(0.6),
-                        Color.clear,
-                        Color(red: 0.08, green: 0.12, blue: 0.15).opacity(0.4)
-                    ], startPoint: .topLeading, endPoint: .bottomTrailing)
-                }
+                Color(red: 0.06, green: 0.06, blue: 0.08)
+                    .ignoresSafeArea()
+                
+                // Subtle gradient overlay
+                BackgroundGradient(colors: [
+                    Color(red: 0.1, green: 0.08, blue: 0.15).opacity(0.6),
+                    Color.clear,
+                    Color(red: 0.08, green: 0.12, blue: 0.15).opacity(0.4)
+                ], startPoint: .topLeading, endPoint: .bottomTrailing)
                 
                 // Ambient glow based on timer state
                 if viewModel.timerState == .ready {
