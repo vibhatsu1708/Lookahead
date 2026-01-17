@@ -15,6 +15,9 @@ struct SettingsView: View {
         animation: .default)
     private var images: FetchedResults<BackgroundImageEntity>
     
+    @AppStorage("hideTimer") private var hideTimer = false
+    @AppStorage("inspectionEnabled") private var inspectionEnabled = false
+    
     @State private var selectedItem: PhotosPickerItem? = nil
     
     var body: some View {
@@ -54,6 +57,29 @@ struct SettingsView: View {
                             }
                         } header: {
                             Text("Appearance")
+                        }
+                        .listRowBackground(Color.white.opacity(0.05))
+                        
+                        Section {
+                            Toggle(isOn: $hideTimer) {
+                                HStack {
+                                    Image(systemName: "eye.slash.fill")
+                                        .foregroundStyle(.purple)
+                                    Text("Hide Timer While Solving")
+                                        .foregroundStyle(.white)
+                                }
+                            }
+                            
+                            Toggle(isOn: $inspectionEnabled) {
+                                HStack {
+                                    Image(systemName: "stopwatch.fill")
+                                        .foregroundStyle(.orange)
+                                    Text("Inspection Time (15s)")
+                                        .foregroundStyle(.white)
+                                }
+                            }
+                        } header: {
+                            Text("Timer")
                         }
                         .listRowBackground(Color.white.opacity(0.05))
                         

@@ -15,6 +15,9 @@ struct TimerView: View {
     @State private var isHolding = false
     @State private var showingCommentSheet = false
     
+    @AppStorage("hideTimer") private var hideTimer = false
+    @AppStorage("inspectionEnabled") private var inspectionEnabled = false
+    
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \BackgroundImageEntity.createdAt, ascending: false)],
         predicate: NSPredicate(format: "isCurrent == YES"),
@@ -57,6 +60,11 @@ struct TimerView: View {
         .preferredColorScheme(.dark)
         .onAppear {
             syncWithCurrentSession()
+            // Sync settings
+            viewModel.inspectionEnabled = inspectionEnabled
+        }
+        .onChange(of: inspectionEnabled) { _, newValue in
+            viewModel.inspectionEnabled = newValue
         }
         .onChange(of: sessionManager.currentSession) { _, _ in
             syncWithCurrentSession()
@@ -114,6 +122,19 @@ struct TimerView: View {
                     .transition(.opacity)
                 }
                 
+                if viewModel.timerState == .inspection {
+                    RadialGradient(
+                        colors: [
+                            Color.yellow.opacity(0.1),
+                            Color.clear
+                        ],
+                        center: .center,
+                        startRadius: 20,
+                        endRadius: 250
+                    )
+                    .transition(.opacity)
+                }
+                
                 if viewModel.timerState == .running {
                     RadialGradient(
                         colors: [
@@ -134,26 +155,32 @@ struct TimerView: View {
     // MARK: - Top Bar
     
     private var topBar: some View {
-        VStack(spacing: 12) {
-            HStack {
-                SessionPicker(sessionManager: sessionManager)
-                
-                Spacer()
-            }
+        HStack(spacing: 8) {
+            SessionPicker(sessionManager: sessionManager)
             
-            // Cube type picker (synced with session)
-            HStack {
-                CubeTypePicker(selectedType: $viewModel.selectedCubeType) { newType in
-                    viewModel.changeCubeType(to: newType)
-                    // Update session's cube type
-                    if let session = sessionManager.currentSession {
-                        sessionManager.updateSessionCubeType(session, to: newType)
-                    }
+            // Divider
+            Capsule()
+                .fill(.white.opacity(0.1))
+                .frame(width: 1, height: 20)
+            
+            CubeTypePicker(selectedType: $viewModel.selectedCubeType) { newType in
+                viewModel.changeCubeType(to: newType)
+                // Update session's cube type
+                if let session = sessionManager.currentSession {
+                    sessionManager.updateSessionCubeType(session, to: newType)
                 }
-                
-                Spacer()
             }
         }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 6)
+        .background(
+            Capsule()
+                .fill(.white.opacity(0.08))
+                .overlay(
+                    Capsule()
+                        .strokeBorder(.white.opacity(0.1), lineWidth: 1)
+                )
+        )
         .padding(.top, 60)
     }
     
@@ -171,15 +198,22 @@ struct TimerView: View {
                     } : nil
                 )
                 .transition(.opacity.combined(with: .scale(scale: 0.95)))
+            } else if hideTimer {
+                // Show "Solving..." or similar visual when hidden
+                Text("Solving...")
+                    .font(.system(size: 24, weight: .light, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.3))
             }
             
             // Timer display
-            TimerDisplayView(
-                time: viewModel.displayTime,
-                state: viewModel.timerState
-            )
-            .scaleEffect(viewModel.timerState == .running ? 1.1 : 1.0)
-            .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.timerState)
+            if !hideTimer || viewModel.timerState != .running {
+                TimerDisplayView(
+                    time: viewModel.displayTime,
+                    state: viewModel.timerState
+                )
+                .scaleEffect(viewModel.timerState == .running ? 1.1 : 1.0)
+                .animation(.spring(response: 0.4, dampingFraction: 0.7), value: viewModel.timerState)
+            }
             
             // Prompt text or action buttons
             if viewModel.timerState == .stopped {
@@ -199,6 +233,8 @@ struct TimerView: View {
                 Text("Hold to start")
             case .ready:
                 Text("Release to start")
+            case .inspection:
+                Text("Inspection")
             case .running:
                 Text("")
             case .stopped:
@@ -291,6 +327,9 @@ struct TimerView: View {
         case .idle:
             startHoldCheck()
             
+        case .inspection:
+            startHoldCheck()
+            
         case .running:
             // Stop the timer immediately on touch
             viewModel.stopTimer(context: viewContext, session: sessionManager.currentSession)
@@ -320,10 +359,10 @@ struct TimerView: View {
     private func handleTouchUp() {
         switch viewModel.timerState {
         case .ready:
-            // Start the timer when released after being ready
-            viewModel.startTimer()
+            // Start the timer (or inspection) when released after being ready
+            viewModel.triggerPhaseChange()
             
-        case .stopped, .idle, .running:
+        case .stopped, .idle, .inspection, .running:
             break
         }
         

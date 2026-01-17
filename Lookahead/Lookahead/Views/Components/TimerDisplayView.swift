@@ -26,6 +26,11 @@ struct TimerDisplayView: View {
             return .white
         case .stopped:
             return Color(red: 1.0, green: 0.85, blue: 0.3) // Golden yellow
+        case .inspection:
+             if let inspectionTime = Int(time), inspectionTime < 5 {
+                return .red
+            }
+            return .orange
         }
     }
     

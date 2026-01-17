@@ -16,32 +16,13 @@ struct ScrambleView: View {
     
     var body: some View {
         VStack(spacing: 16) {
-            // Cube type badge
-            HStack(spacing: 6) {
-                Image(systemName: "cube.fill")
-                    .font(.system(size: 12, weight: .semibold))
-                Text(cubeType.displayName)
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-            }
-            .foregroundStyle(.white.opacity(0.7))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(
-                Capsule()
-                    .fill(.white.opacity(0.1))
-                    .overlay(
-                        Capsule()
-                            .strokeBorder(.white.opacity(0.2), lineWidth: 1)
-                    )
-            )
-            
             // Scramble text
             Text(scramble)
-                .font(.system(size: 18, weight: .medium, design: .monospaced))
+                .font(.system(size: 15, weight: .medium, design: .monospaced))
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
-                .lineSpacing(6)
-                .padding(.horizontal, 24)
+                .lineSpacing(4)
+                .padding(.horizontal, 14)
                 .opacity(isAnimating ? 1 : 0)
                 .offset(y: isAnimating ? 0 : 10)
                 .animation(.spring(response: 0.5, dampingFraction: 0.8), value: isAnimating)

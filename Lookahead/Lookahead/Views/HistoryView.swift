@@ -200,52 +200,9 @@ struct HistoryView: View {
                 
                 LazyVStack(spacing: 12) {
                     ForEach(filteredSolves, id: \.id) { solve in
-                        SolveRow(solve: solve)
+                        SolveRow(solve: solve, sessionManager: sessionManager)
                             .onTapGesture {
                                 selectedSolve = solve
-                            }
-                            .contextMenu {
-                                // Penalty options
-                                Menu {
-                                    Button {
-                                        updatePenalty(solve, to: .none)
-                                    } label: {
-                                        Label("OK", systemImage: solve.penaltyType == .none ? "checkmark" : "")
-                                    }
-                                    
-                                    Button {
-                                        updatePenalty(solve, to: .plusTwo)
-                                    } label: {
-                                        Label("+2", systemImage: solve.penaltyType == .plusTwo ? "checkmark" : "")
-                                    }
-                                    
-                                    Button {
-                                        updatePenalty(solve, to: .dnf)
-                                    } label: {
-                                        Label("DNF", systemImage: solve.penaltyType == .dnf ? "checkmark" : "")
-                                    }
-                                } label: {
-                                    Label("Penalty", systemImage: "exclamationmark.triangle")
-                                }
-                                
-                                // Flag toggle
-                                Button {
-                                    toggleFlag(solve)
-                                } label: {
-                                    Label(
-                                        solve.isFlagged ? "Unflag" : "Flag",
-                                        systemImage: solve.isFlagged ? "flag.slash" : "flag"
-                                    )
-                                }
-                                
-                                Divider()
-                                
-                                // Delete
-                                Button(role: .destructive) {
-                                    deleteSolve(solve)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
                             }
                     }
                 }
@@ -266,52 +223,9 @@ struct HistoryView: View {
                 
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 3), spacing: 12) {
                     ForEach(filteredSolves, id: \.id) { solve in
-                        CompactSolveCard(solve: solve)
+                        CompactSolveCard(solve: solve, sessionManager: sessionManager)
                             .onTapGesture {
                                 selectedSolve = solve
-                            }
-                            .contextMenu {
-                                // Penalty options
-                                Menu {
-                                    Button {
-                                        updatePenalty(solve, to: .none)
-                                    } label: {
-                                        Label("OK", systemImage: solve.penaltyType == .none ? "checkmark" : "")
-                                    }
-                                    
-                                    Button {
-                                        updatePenalty(solve, to: .plusTwo)
-                                    } label: {
-                                        Label("+2", systemImage: solve.penaltyType == .plusTwo ? "checkmark" : "")
-                                    }
-                                    
-                                    Button {
-                                        updatePenalty(solve, to: .dnf)
-                                    } label: {
-                                        Label("DNF", systemImage: solve.penaltyType == .dnf ? "checkmark" : "")
-                                    }
-                                } label: {
-                                    Label("Penalty", systemImage: "exclamationmark.triangle")
-                                }
-                                
-                                // Flag toggle
-                                Button {
-                                    toggleFlag(solve)
-                                } label: {
-                                    Label(
-                                        solve.isFlagged ? "Unflag" : "Flag",
-                                        systemImage: solve.isFlagged ? "flag.slash" : "flag"
-                                    )
-                                }
-                                
-                                Divider()
-                                
-                                // Delete
-                                Button(role: .destructive) {
-                                    deleteSolve(solve)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
                             }
                     }
                 }
@@ -322,29 +236,7 @@ struct HistoryView: View {
     }
 
     
-    // MARK: - Helpers
-    
-    private func updatePenalty(_ solve: SolveEntity, to penalty: SolvePenalty) {
-        withAnimation {
-            solve.penaltyType = penalty
-            try? viewContext.save()
-        }
-    }
-    
-    private func toggleFlag(_ solve: SolveEntity) {
-        withAnimation {
-            solve.isFlagged.toggle()
-            try? viewContext.save()
-        }
-    }
-    
-    private func deleteSolve(_ solve: SolveEntity) {
-        withAnimation {
-            viewContext.delete(solve)
-            try? viewContext.save()
-            sessionManager.refreshSessions()
-        }
-    }
+
 }
 
 // MARK: - Filter Chip
@@ -373,7 +265,9 @@ struct FilterChip: View {
 // MARK: - Solve Row
 
 struct SolveRow: View {
+    @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var solve: SolveEntity
+    var sessionManager: SessionManager
     
     private var timeColor: Color {
         switch solve.penaltyType {
@@ -438,13 +332,82 @@ struct SolveRow: View {
                         .strokeBorder(solve.isFlagged ? .yellow.opacity(0.2) : .white.opacity(0.08), lineWidth: 1)
                 )
         )
+        .contextMenu {
+            // Penalty options
+            Menu {
+                Button {
+                    updatePenalty(to: .none)
+                } label: {
+                    Label("OK", systemImage: solve.penaltyType == .none ? "checkmark" : "")
+                }
+                
+                Button {
+                    updatePenalty(to: .plusTwo)
+                } label: {
+                    Label("+2", systemImage: solve.penaltyType == .plusTwo ? "checkmark" : "")
+                }
+                
+                Button {
+                    updatePenalty(to: .dnf)
+                } label: {
+                    Label("DNF", systemImage: solve.penaltyType == .dnf ? "checkmark" : "")
+                }
+            } label: {
+                Label("Penalty", systemImage: "exclamationmark.triangle")
+            }
+            
+            // Flag toggle
+            Button {
+                toggleFlag()
+            } label: {
+                Label(
+                    solve.isFlagged ? "Unflag" : "Flag",
+                    systemImage: solve.isFlagged ? "flag.slash" : "flag"
+                )
+            }
+            
+            Divider()
+            
+            // Delete
+            Button(role: .destructive) {
+                deleteSolve()
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
+    }
+    
+    // MARK: - Helpers
+    
+    private func updatePenalty(to penalty: SolvePenalty) {
+        withAnimation {
+            solve.penaltyType = penalty
+            try? viewContext.save()
+        }
+    }
+    
+    private func toggleFlag() {
+        withAnimation {
+            solve.isFlagged.toggle()
+            try? viewContext.save()
+        }
+    }
+    
+    private func deleteSolve() {
+        withAnimation {
+            viewContext.delete(solve)
+            try? viewContext.save()
+            sessionManager.refreshSessions()
+        }
     }
 }
 
 // MARK: - Compact Solve Card
 
 struct CompactSolveCard: View {
+    @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var solve: SolveEntity
+    var sessionManager: SessionManager
     
     private var timeColor: Color {
         switch solve.penaltyType {
@@ -502,6 +465,83 @@ struct CompactSolveCard: View {
                         .strokeBorder(solve.isFlagged ? .yellow.opacity(0.2) : .white.opacity(0.08), lineWidth: 1)
                 )
         )
+        .contextMenu {
+            contextMenuContent
+        }
+    }
+
+    
+    // MARK: - Helpers
+    
+    private func updatePenalty(to penalty: SolvePenalty) {
+        withAnimation {
+            solve.penaltyType = penalty
+            try? viewContext.save()
+        }
+    }
+    
+    private func toggleFlag() {
+        withAnimation {
+            solve.isFlagged.toggle()
+            try? viewContext.save()
+        }
+    }
+    
+    private func deleteSolve() {
+        withAnimation {
+            viewContext.delete(solve)
+            try? viewContext.save()
+            sessionManager.refreshSessions()
+        }
+    }
+}
+
+// Extension to add the modifiers to CompactSolveCard body
+extension CompactSolveCard {
+    var contextMenuContent: some View {
+        Group {
+            // Penalty options
+            Menu {
+                Button {
+                    updatePenalty(to: .none)
+                } label: {
+                    Label("OK", systemImage: solve.penaltyType == .none ? "checkmark" : "")
+                }
+                
+                Button {
+                    updatePenalty(to: .plusTwo)
+                } label: {
+                    Label("+2", systemImage: solve.penaltyType == .plusTwo ? "checkmark" : "")
+                }
+                
+                Button {
+                    updatePenalty(to: .dnf)
+                } label: {
+                    Label("DNF", systemImage: solve.penaltyType == .dnf ? "checkmark" : "")
+                }
+            } label: {
+                Label("Penalty", systemImage: "exclamationmark.triangle")
+            }
+            
+            // Flag toggle
+            Button {
+                toggleFlag()
+            } label: {
+                Label(
+                    solve.isFlagged ? "Unflag" : "Flag",
+                    systemImage: solve.isFlagged ? "flag.slash" : "flag"
+                )
+            }
+            
+            Divider()
+            
+            // Delete
+            Button(role: .destructive) {
+                deleteSolve()
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        }
     }
 }
 

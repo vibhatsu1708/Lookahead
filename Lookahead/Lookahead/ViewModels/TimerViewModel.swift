@@ -12,8 +12,14 @@ import CoreData
 enum TimerState {
     case idle
     case ready      // Holding down, preparing to start
+    case inspection // Inspection time running
     case running    // Timer is active
     case stopped    // Just stopped, showing time
+}
+
+enum TimerPhase {
+    case inspection
+    case solving
 }
 
 @MainActor
@@ -22,8 +28,19 @@ class TimerViewModel: ObservableObject {
     @Published var selectedCubeType: CubeType = .threeByThree
     @Published var timerState: TimerState = .idle
     @Published var elapsedTime: TimeInterval = 0
+    @Published var inspectionTimeRemaining: TimeInterval = 15
+    @Published var inspectionEnabled: Bool = false {
+        didSet {
+            if timerState == .idle {
+                nextPhase = inspectionEnabled ? .inspection : .solving
+            }
+        }
+    }
     @Published var lastSolveTime: TimeInterval? = nil
     @Published var lastSolvePenalty: SolvePenalty = .none
+    
+    // Phase management
+    private(set) var nextPhase: TimerPhase = .solving
     
     private var timer: Timer?
     private var startTime: Date?
@@ -56,12 +73,48 @@ class TimerViewModel: ObservableObject {
     // MARK: - Timer Controls
     
     func prepareTimer() {
+        // If we are inspecting, next up is solving.
+        // If we are idle, next up depends on settings (which sets nextPhase).
         timerState = .ready
-        elapsedTime = 0
-        lastSolvePenalty = .none
+        
+        if timerState != .inspection && nextPhase == .solving {
+            elapsedTime = 0
+            lastSolvePenalty = .none
+        }
+    }
+    
+    func triggerPhaseChange() {
+        if nextPhase == .inspection {
+            startInspection()
+            // After inspection starts, the next phase is solving
+            nextPhase = .solving
+        } else {
+            startTimer()
+        }
+    }
+    
+    func startInspection() {
+        timerState = .inspection
+        inspectionTimeRemaining = 15
+        
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                guard let self = self else { return }
+                self.inspectionTimeRemaining -= 0.1
+                
+                if self.inspectionTimeRemaining <= -2 {
+                    // DNF if inspection goes too long (standard +2 is usually at 15-17s, DNF after)
+                    // For simplicity, let's auto-DNF or just keep negative counter?
+                    // User request doesn't specify penalty logic for inspection overstay.
+                    // Keeping simple: just count down. 
+                }
+            }
+        }
     }
     
     func startTimer() {
+        timer?.invalidate() // Stop inspection timer if running
         timerState = .running
         startTime = Date()
         lastScramble = currentScramble
@@ -93,9 +146,13 @@ class TimerViewModel: ObservableObject {
     
     func resetToIdle() {
         timerState = .idle
+        elapsedTime = 0
         lastSavedSolve = nil
         lastSolvePenalty = .none
         generateNewScramble()
+        
+        // Determine the first phase of the next solve
+        nextPhase = inspectionEnabled ? .inspection : .solving
     }
     
     // MARK: - Penalty Management
@@ -220,6 +277,8 @@ class TimerViewModel: ObservableObject {
     var displayTime: String {
         if timerState == .stopped {
             return displayTimeWithPenalty
+        } else if timerState == .inspection {
+            return String(format: "%d", Int(ceil(inspectionTimeRemaining)))
         }
         return formatTime(elapsedTime)
     }

@@ -15,6 +15,7 @@ struct LookaheadApp: App {
         WindowGroup {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .useGlobalFont()
         }
     }
 }
