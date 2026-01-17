@@ -86,7 +86,7 @@ struct CustomTabBar: View {
                         // Bouncing Dot
                         if selectedTab == tab {
                             Circle()
-                                .fill(Color.white)
+                                .fill(themeManager.colors.light)
                                 .frame(width: 4, height: 4)
                                 .matchedGeometryEffect(id: "ActiveDot", in: animation)
                         } else {

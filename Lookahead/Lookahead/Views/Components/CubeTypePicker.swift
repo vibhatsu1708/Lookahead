@@ -11,6 +11,7 @@ struct CubeTypePicker: View {
     @Binding var selectedType: CubeType
     var onChange: ((CubeType) -> Void)?
     
+    @ObservedObject var themeManager = ThemeManager.shared
     @State private var isExpanded = false
     
     private let mainCubeTypes: [CubeType] = [.twoByTwo, .threeByThree, .fourByFour, .fiveByFive]
@@ -44,7 +45,7 @@ struct CubeTypePicker: View {
                     .font(.system(size: 12, weight: .bold))
                     .rotationEffect(.degrees(isExpanded ? 180 : 0))
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(themeManager.colors.light)
             .padding(.horizontal, 18)
             .padding(.vertical, 12)
             .background(
@@ -52,8 +53,8 @@ struct CubeTypePicker: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color(red: 0.2, green: 0.2, blue: 0.25),
-                                Color(red: 0.15, green: 0.15, blue: 0.18)
+                                themeManager.colors.dark,
+                                themeManager.colors.medium.opacity(0.8)
                             ],
                             startPoint: .top,
                             endPoint: .bottom

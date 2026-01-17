@@ -31,12 +31,8 @@ struct HistoryView: View {
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // Background
-                themeManager.colors.complexGradient
-                
-                VStack(spacing: 0) {
+        PageContainer {
+            VStack(spacing: 0) {
                     // Header
                     header
                     
@@ -57,7 +53,6 @@ struct HistoryView: View {
                         }
                     }
                 }
-            }
         }
         .preferredColorScheme(.dark)
         .sheet(item: $selectedSolve) { solve in

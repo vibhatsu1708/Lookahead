@@ -39,12 +39,8 @@ struct StatsView: View {
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // Background
-                themeManager.colors.complexGradient
-                
-                VStack(spacing: 0) {
+        PageContainer {
+            VStack(spacing: 0) {
                     // Header
                     header
                     
@@ -74,7 +70,6 @@ struct StatsView: View {
                             .padding(.bottom, 100)
                         }
                     }
-                }
             }
         }
         .preferredColorScheme(.dark)

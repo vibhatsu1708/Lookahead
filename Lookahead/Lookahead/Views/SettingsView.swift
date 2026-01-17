@@ -16,73 +16,67 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationStack {
-            GeometryReader { geometry in
-                ZStack {
-                    // Dynamic Theme Background
-                    themeManager.colors.complexGradient
-                    
-                    List {
+            PageContainer {
+                ScrollView {
+                    LazyVStack(spacing: 24) {
                         // Theme Picker Section
-                        Section {
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 44), spacing: 20)], spacing: 20) {
-                                ForEach(AppTheme.allCases) { theme in
-                                    Button {
-                                        withAnimation(.easeInOut(duration: 0.3)) {
-                                            themeManager.setTheme(theme)
-                                        }
-                                    } label: {
-                                        ZStack {
-                                            Circle()
-                                                .fill(theme.colors.backgroundGradient)
-                                                .frame(width: 44, height: 44)
-                                                .shadow(color: .black.opacity(0.3), radius: 3)
-                                            
-                                            // Selection Ring
-                                            if themeManager.currentTheme == theme {
-                                                Circle()
-                                                    .strokeBorder(Color.white, lineWidth: 2)
-                                                    .frame(width: 50, height: 50)
-                                            }
-                                        }
-                                    }
-                                    .buttonStyle(.plain)
-                                }
-                            }
-                            .padding(.vertical, 8)
-                        } header: {
-                            Text("Theme")
-                                .foregroundStyle(themeManager.colors.light.opacity(0.8))
-                        }
-                        .listRowBackground(Color.clear) // Transparent row for grid
+                        ThemeCarousel()
+                            .padding(.vertical, 10)
                         
                         // Timer Settings
-                        Section {
-                            Toggle(isOn: $hideTimer) {
-                                HStack {
-                                    Image(systemName: "eye.slash.fill")
-                                        .foregroundStyle(themeManager.colors.medium)
-                                    Text("Hide Timer While Solving")
-                                        .foregroundStyle(themeManager.colors.light)
-                                }
-                            }
-                            
-                            Toggle(isOn: $inspectionEnabled) {
-                                HStack {
-                                    Image(systemName: "stopwatch.fill")
-                                        .foregroundStyle(themeManager.colors.medium)
-                                    Text("Inspection Time (15s)")
-                                        .foregroundStyle(themeManager.colors.light)
-                                }
-                            }
-                        } header: {
+                        VStack(alignment: .leading, spacing: 12) {
                             Text("Timer")
+                                .font(.system(size: 14, weight: .semibold, design: .rounded))
                                 .foregroundStyle(themeManager.colors.light.opacity(0.8))
+                                .padding(.horizontal, 4)
+                            
+                            VStack(spacing: 12) {
+                                Toggle(isOn: $hideTimer) {
+                                    HStack {
+                                        Image(systemName: "eye.slash.fill")
+                                            .foregroundStyle(themeManager.colors.medium)
+                                            .frame(width: 24)
+                                        Text("Hide Timer While Solving")
+                                            .font(.system(size: 16, weight: .medium, design: .rounded))
+                                            .foregroundStyle(themeManager.colors.light)
+                                    }
+                                }
+                                .padding(16)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .fill(.white.opacity(0.05))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                                .strokeBorder(.white.opacity(0.08), lineWidth: 1)
+                                        )
+                                )
+                                
+                                Toggle(isOn: $inspectionEnabled) {
+                                    HStack {
+                                        Image(systemName: "stopwatch.fill")
+                                            .foregroundStyle(themeManager.colors.medium)
+                                            .frame(width: 24)
+                                        Text("Inspection Time (15s)")
+                                            .font(.system(size: 16, weight: .medium, design: .rounded))
+                                            .foregroundStyle(themeManager.colors.light)
+                                    }
+                                }
+                                .padding(16)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .fill(.white.opacity(0.05))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                                .strokeBorder(.white.opacity(0.08), lineWidth: 1)
+                                        )
+                                )
+                            }
                         }
-                        .listRowBackground(themeManager.colors.darkest.opacity(0.3))
                     }
-                    .scrollContentBackground(.hidden)
-                    .navigationTitle("Settings")
+                    .padding(24)
                 }
+                .scrollContentBackground(.hidden)
+                .navigationTitle("Settings")
             }
         }
         .preferredColorScheme(.dark)

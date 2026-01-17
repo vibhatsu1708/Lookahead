@@ -9,28 +9,32 @@ import SwiftUI
 
 enum AppTheme: String, CaseIterable, Identifiable {
     case `default`
-    case blue
-    case grey
-    case brown
-    case olive
-    case pink
-    case green
-    case rose
-    case vivid
+    case oceanDepth
+    case silentStorm
+    case desertSand
+    case forestMoss
+    case sakuraBloom
+    case jungleLeaf
+    case crimsonRose
+    case electricViolet
+    case peachyGlow
+    case lushHarmony
     
     var id: String { self.rawValue }
     
     var displayName: String {
         switch self {
         case .default: return "Default"
-        case .blue: return "Blue"
-        case .grey: return "Grey"
-        case .brown: return "Brown"
-        case .olive: return "Olive"
-        case .pink: return "Pink"
-        case .green: return "Green"
-        case .rose: return "Rose"
-        case .vivid: return "Vivid"
+        case .oceanDepth: return "Ocean Depth"
+        case .silentStorm: return "Silent Storm"
+        case .desertSand: return "Desert Sand"
+        case .forestMoss: return "Forest Moss"
+        case .sakuraBloom: return "Sakura Bloom"
+        case .jungleLeaf: return "Jungle Leaf"
+        case .crimsonRose: return "Crimson Rose"
+        case .electricViolet: return "Electric Violet"
+        case .peachyGlow: return "Peachy Glow"
+        case .lushHarmony: return "Lush Harmony"
         }
     }
     
@@ -40,65 +44,79 @@ enum AppTheme: String, CaseIterable, Identifiable {
             return ThemePalette(
                 darkest: Color(hex: "0F0F14"),
                 dark: Color(hex: "1A1426"),
-                medium: Color(hex: "141F26"),
+                medium: Color(hex: "adb5bd"),
                 light: Color(hex: "FFFFFF"), // White for standard text
                 isDefault: true
             )
-        case .blue:
+        case .oceanDepth:
             return ThemePalette(
                 darkest: Color(hex: "023e8a"),
                 dark: Color(hex: "0077b6"),
                 medium: Color(hex: "00b4d8"),
                 light: Color(hex: "caf0f8")
             )
-        case .grey:
+        case .silentStorm:
             return ThemePalette(
                 darkest: Color(hex: "0d1b2a"),
                 dark: Color(hex: "1b263b"),
                 medium: Color(hex: "415a77"),
                 light: Color(hex: "e0e1dd")
             )
-        case .brown:
+        case .desertSand:
             return ThemePalette(
                 darkest: Color(hex: "582f0e"),
                 dark: Color(hex: "936639"),
                 medium: Color(hex: "a68a64"),
                 light: Color(hex: "b6ad90")
             )
-        case .olive:
+        case .forestMoss:
             return ThemePalette(
                 darkest: Color(hex: "333d29"),
                 dark: Color(hex: "656d4a"),
                 medium: Color(hex: "a4ac86"),
                 light: Color(hex: "c2c5aa")
             )
-        case .pink:
+        case .sakuraBloom:
             return ThemePalette(
                 darkest: Color(hex: "fb6f92"),
                 dark: Color(hex: "ff8fab"),
                 medium: Color(hex: "ffb3c6"),
                 light: Color(hex: "ffe5ec")
             )
-        case .green:
+        case .jungleLeaf:
             return ThemePalette(
                 darkest: Color(hex: "132a13"),
                 dark: Color(hex: "31572c"),
                 medium: Color(hex: "4f772d"),
                 light: Color(hex: "ecf39e")
             )
-        case .rose:
+        case .crimsonRose:
             return ThemePalette(
                 darkest: Color(hex: "590d22"),
                 dark: Color(hex: "a4133c"),
                 medium: Color(hex: "ff4d6d"),
                 light: Color(hex: "ffccd5")
             )
-        case .vivid:
+        case .electricViolet:
             return ThemePalette(
                 darkest: Color(hex: "10002b"),
                 dark: Color(hex: "3c096c"),
                 medium: Color(hex: "7b2cbf"),
                 light: Color(hex: "e0aaff")
+            )
+        case .peachyGlow:
+            return ThemePalette(
+                darkest: Color(hex: "472d30"),
+                dark: Color(hex: "723d46"),
+                medium: Color(hex: "e26d5c"),
+                light: Color(hex: "ffe1a8")
+            )
+        case .lushHarmony:
+            return ThemePalette(
+                darkest: Color(hex: "054a29"),
+                dark: Color(hex: "2a9134"),
+                medium: Color(hex: "3fa34d"),
+                light: Color(hex: "5bba6f")
             )
         }
     }
