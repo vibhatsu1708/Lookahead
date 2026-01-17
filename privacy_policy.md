@@ -3,7 +3,7 @@
 **Last Updated:** January 17, 2026
 
 ## 1. Overview
-Lookahead ("we", "our", or "us") operates as a privacy-first utility for speedcubers. We believe your data belongs to you. This Privacy Policy explains how the Lookahead iOS application handles your information.
+Lookahead operates as a privacy-first utility for speedcubers. We believe your data belongs to you. This Privacy Policy explains how the Lookahead iOS application handles your information.
 
 ## 2. Data Collection & Storage
 Lookahead is designed as a standalone, offline-first application.
