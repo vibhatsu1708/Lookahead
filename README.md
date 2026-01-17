@@ -1,44 +1,68 @@
-# Lookahead
+<div align="center">
+  <img src="Docs/Images/logo.png" width="120" />
+  <h1>Lookahead</h1>
+  <p>
+    <strong>Elevate Your Solving.</strong><br>
+    The most refined Rubik's Cube timer on iOS.
+  </p>
+  
+  <p>
+    <a href="#overview">Overview</a> •
+    <a href="#features">Features</a> •
+    <a href="#visuals">Visuals</a> •
+    <a href="privacy_policy.md">Privacy Policy</a>
+  </p>
 
-> **Elevate Your Solving.**
-> Experience the most refined Rubik's Cube timer on iOS.
+  <br>
 
-![Lookahead Showcase](Docs/Images/showcase_collage.png)
+  <img src="Docs/Images/showcase_collage.png" width="100%" alt="Lookahead Showcase" />
+</div>
+
+<br>
 
 ## Overview
-Lookahead is built for speedcubers who value aesthetics as much as performance. With a stunning, customizable interface that adapts to your style, it offers precision timing, detailed statistics, and a silky-smooth user experience. Whether you're a speedcuber or a casual solver, enjoy a distraction-free environment designed to help you focus on your next personal best.
+**Lookahead** is built for speedcubers who value aesthetics as much as performance. With a stunning, customizable interface that adapts to your style, it offers precision timing, detailed statistics, and a silky-smooth user experience. Whether you're a speedcuber or a casual solver, enjoy a distraction-free environment designed to help you focus on your next personal best.
 
-## Key Features
+---
 
-### Premium Aesthetics
-Custom themes that adapt the entire app—from backgrounds to text and charts. Choose from 9 curated palettes like "Midnight Onyx", "Electric Violet", and "Forest Moss".
+## Features
 
-<p align="center">
+### 🎨 Premium Aesthetics
+Your timer, your style. Lookahead features an **Infinite Theme Carousel** with 9 curated palettes like *Midnight Onyx* and *Electric Violet*. Every element—from charts to the tab bar—adapts to your chosen theme.
+
+<div align="center">
+  <img src="Docs/Images/settings_violet.png" width="45%" alt="Settings Theme Picker" />
+  <img src="Docs/Images/history_blue.png" width="45%" alt="History Blue Theme" />
+</div>
+
+### 📈 Powerful Statistics
+Track your progress with professional-grade analytics.
+- **WCA Scrambles**: Supports all puzzle types (2x2 - 7x7, Pyraminx, etc).
+- **Interactive Charts**: Visualize your Ao5, Ao12, averages, and trend lines.
+- **Detailed History**: Review every solve with context-aware sorting.
+
+### ⚡️ Designed for Speed
+- **Inspection Timer**: WCA-style hold-to-start mechanism.
+- **Hide Timer**: Option to hide digits while solving to help you look ahead.
+- **Haptic Feedback**: Custom haptic patterns for start, stop, and UI interactions.
+- **Gesture Control**: Swipe to delete, tap to inspect, hold to start.
+
+<div align="center">
   <img src="Docs/Images/timer_red.png" width="30%" />
   <img src="Docs/Images/history_green.png" width="30%" />
   <img src="Docs/Images/stats_brown.png" width="30%" />
-</p>
-
-### Powerful Statistics
-Track your progress with advanced analytics. View your Ao5, Ao12, averages, and trend lines in beautiful, interactive charts.
-
-- **Professional Scrambles**: Supports all WCA puzzle types (2x2 - 7x7, Pyraminx, etc).
-- **Infinite Theme Carousel**: A unique horizontal carousel with haptic-enhanced selection.
-- **Haptic Feedback**: Feel the timer start, stop, and snap with custom haptics.
-- **Privacy First**: All data is stored locally. No tracking, no accounts.
-
-### Designed for Speed
-- **Inspection Timer**: WCA-style inspection with hold-to-start.
-- **Hide Timer**: Option to hide digits while solving to reduce anxiety.
-- **Gesture Control**: Swipe to delete, tap to inspect, hold to start.
-
-<p align="center">
-  <img src="Docs/Images/history_blue.png" width="50%" />
-</p>
-
-## Privacy
-Your data belongs to you. Lookahead operates completely offline.
-[Read our Privacy Policy](privacy_policy.md)
+</div>
 
 ---
-© 2026 Lookahead. Built with ❤️ for the community.
+
+## Privacy
+**Your data belongs to you.**
+Lookahead operates completely offline. We do not track your usage, store your data on external servers, or require an account.
+
+[Read our Privacy Policy](privacy_policy.md)
+
+<br>
+
+<div align="center">
+  <sub>© 2026 Lookahead. Built with ❤️ for the community.</sub>
+</div>
