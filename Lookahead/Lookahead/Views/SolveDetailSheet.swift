@@ -100,11 +100,41 @@ struct SolveDetailSheet: View {
     
     // MARK: - Scramble Section
     
+    @State private var showing3DPreview = false
+    
+    // MARK: - Scramble Section
+    
     private var scrambleSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("Scramble", systemImage: "cube")
-                .font(.system(size: 14, weight: .semibold, design: .rounded))
-                .foregroundStyle(themeManager.colors.light.opacity(0.5))
+            HStack {
+                Label("Scramble", systemImage: "cube")
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.5))
+                
+                Spacer()
+                
+                // Show Preview Button
+                Button(action: {
+                    if let state = getCubeState() {
+                        FloatingPreviewManager.shared.toggle(with: state)
+                    }
+                }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "cube.transparent")
+                            .font(.system(size: 12, weight: .semibold))
+                        Text("Preview")
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    }
+                    .foregroundStyle(themeManager.colors.light.opacity(0.8))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        Capsule()
+                            .fill(themeManager.colors.light.opacity(0.1))
+                    )
+                }
+                .buttonStyle(.plain)
+            }
             
             Text(solve.scramble ?? "")
                 .font(.system(size: 15, weight: .medium, design: .monospaced))
@@ -115,7 +145,46 @@ struct SolveDetailSheet: View {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
                         .fill(themeManager.colors.light.opacity(0.05))
                 )
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    showing3DPreview = true
+                }
         }
+        .sheet(isPresented: $showing3DPreview) {
+            if let state = getCubeState() {
+                NavigationStack {
+                    ZStack {
+                        themeManager.colors.darkest.ignoresSafeArea()
+                        Cube3DView(state: state)
+                             .ignoresSafeArea()
+                    }
+                    .navigationTitle("3D Preview")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") {
+                                showing3DPreview = false
+                            }
+                        }
+                    }
+                    .toolbarBackground(.visible, for: .navigationBar)
+                }
+                .presentationDetents([.medium, .large])
+            }
+        }
+        .onDisappear {
+            FloatingPreviewManager.shared.hide()
+        }
+    }
+    
+    private func getCubeState() -> CubeState? {
+        guard let scramble = solve.scramble,
+              let typeString = solve.cubeType,
+              let type = CubeType(rawValue: typeString) else { return nil }
+        
+        var state = CubeState(type: type)
+        state.apply(moves: scramble)
+        return state
     }
     
     // MARK: - Penalty Section

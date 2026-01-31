@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct TimerView: View {
+    @Environment(\.scenePhase) var scenePhase
     @Environment(\.managedObjectContext) private var viewContext
     @ObservedObject var sessionManager: SessionManager
     @StateObject private var viewModel = TimerViewModel()
@@ -58,6 +59,19 @@ struct TimerView: View {
         }
         .onChange(of: inspectionEnabled) { _, newValue in
             viewModel.inspectionEnabled = newValue
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .inactive || newPhase == .background {
+                // Cancel holding if app goes background
+                if isHolding {
+                    isHolding = false
+                    holdStartTime = nil
+                }
+                // If we were ready to start, go back to idle to prevent accidental start on resume
+                if viewModel.timerState == .ready {
+                    viewModel.resetToIdle()
+                }
+            }
         }
         .onChange(of: sessionManager.currentSession) { _, _ in
             syncWithCurrentSession()
