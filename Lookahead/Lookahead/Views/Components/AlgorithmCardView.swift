@@ -16,7 +16,7 @@ struct AlgorithmCardView: View {
         VStack(alignment: .leading, spacing: 12) {
             // Preview
             ZStack {
-                Color.black.opacity(0.2)
+                Color.black.opacity(0.1)
                 
                 if category == .oll {
                     OLLView(state: getSetupState())
@@ -25,7 +25,8 @@ struct AlgorithmCardView: View {
                     Cube3DView(state: getSetupState(), interactive: false)
                 }
             }
-            .aspectRatio(1.2, contentMode: .fit) // Keep valid aspect ratio
+            .frame(height: 120)
+            .frame(maxWidth: .infinity)
             .cornerRadius(8)
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
@@ -33,42 +34,29 @@ struct AlgorithmCardView: View {
             )
             
             // Text Content
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(algorithmCase.name)
-                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(themeManager.colors.light)
                     .lineLimit(1)
                 
                 Text(algorithmCase.algorithm)
-                    .font(.system(size: 12, weight: .medium, design: .monospaced))
-                    .foregroundStyle(themeManager.colors.light.opacity(0.6))
+                    .font(.system(size: 13, weight: .medium, design: .monospaced))
+                    .foregroundStyle(themeManager.colors.light.opacity(0.7))
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             
-            Spacer(minLength: 0)
+            Spacer()
         }
         .padding(12)
-        // Removed fixed frame(width: 160) to allow flexibility in grids
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(themeManager.colors.dark.opacity(0.5))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(
-                            LinearGradient(
-                                colors: [
-                                    themeManager.colors.light.opacity(0.2),
-                                    themeManager.colors.light.opacity(0.05)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 1
-                        )
-                )
+        .frame(width: 160) 
+        .background(themeManager.colors.dark.opacity(0.5))
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(themeManager.colors.light.opacity(0.2), lineWidth: 1)
         )
     }
     
