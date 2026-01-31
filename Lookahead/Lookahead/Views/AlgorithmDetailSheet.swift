@@ -23,8 +23,8 @@ struct AlgorithmDetailSheet: View {
                         
                         VStack(alignment: .leading, spacing: 16) {
                             headerText
+                            setupMovesSection
                             mainAlgorithmSection
-                            alternativesSection
                             
                             Spacer(minLength: 20)
                         }
@@ -65,6 +65,24 @@ struct AlgorithmDetailSheet: View {
             .foregroundStyle(themeManager.colors.light)
     }
     
+    private var setupMovesSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Setup Moves")
+                .font(.subheadline)
+                .foregroundStyle(themeManager.colors.light)
+            
+            Text(algorithmCase.setupMoves)
+                .font(.system(size: 16, weight: .regular, design: .monospaced))
+                .foregroundStyle(themeManager.colors.light.opacity(0.6))
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(themeManager.colors.light.opacity(0.05))
+                )
+        }
+    }
+
     private var mainAlgorithmSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Algorithm")
@@ -83,28 +101,7 @@ struct AlgorithmDetailSheet: View {
         }
     }
     
-    @ViewBuilder
-    private var alternativesSection: some View {
-        if let alternatives = algorithmCase.alternatives, !alternatives.isEmpty {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Alternatives")
-                    .font(.subheadline)
-                    .foregroundStyle(themeManager.colors.light)
-                
-                ForEach(alternatives, id: \.self) { alt in
-                    Text(alt)
-                        .font(.system(size: 16, weight: .medium, design: .monospaced))
-                        .foregroundStyle(themeManager.colors.light.opacity(0.8))
-                        .padding(12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(themeManager.colors.light.opacity(0.03))
-                        )
-                }
-            }
-        }
-    }
+
     
     private func getSetupState() -> CubeState {
         var state = CubeState(type: .threeByThree)
