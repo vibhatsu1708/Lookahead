@@ -14,6 +14,7 @@ struct ScrambleView: View {
     
     @State private var isAnimating = false
     @ObservedObject var themeManager = ThemeManager.shared
+    @State private var showing3DPreview = false
     
     var body: some View {
         VStack(spacing: 16) {
@@ -24,6 +25,10 @@ struct ScrambleView: View {
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
                 .padding(.horizontal, 14)
+                .contentShape(Rectangle()) // Make entire area tappable
+                .onTapGesture {
+                    showing3DPreview = true
+                }
                 .opacity(isAnimating ? 1 : 0)
                 .offset(y: isAnimating ? 0 : 10)
                 .animation(.spring(response: 0.5, dampingFraction: 0.8), value: isAnimating)
@@ -77,8 +82,29 @@ struct ScrambleView: View {
                 }
             }
         }
+        .sheet(isPresented: $showing3DPreview) {
+            NavigationStack {
+                ZStack {
+                   themeManager.colors.darkest.ignoresSafeArea()
+                   
+                   Cube3DView(state: getCubeState())
+                        .ignoresSafeArea()
+                }
+                .navigationTitle("3D Preview")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Done") {
+                            showing3DPreview = false
+                        }
+                    }
+                }
+                .toolbarBackground(.visible, for: .navigationBar)
+            }
+            .presentationDetents([.medium, .large])
+        }
         .onChange(of: scramble) { _, newValue in
-            // If preview is active, update it
+            // If floating preview is active, update it
             if FloatingPreviewManager.shared.currentCubeState != nil {
                 var state = CubeState(type: cubeType)
                 state.apply(moves: newValue)
@@ -99,6 +125,12 @@ struct ScrambleView: View {
                 isAnimating = true
             }
         }
+    }
+    
+    private func getCubeState() -> CubeState {
+        var state = CubeState(type: cubeType)
+        state.apply(moves: scramble)
+        return state
     }
 }
 

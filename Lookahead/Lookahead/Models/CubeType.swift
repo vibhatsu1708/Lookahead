@@ -8,10 +8,10 @@
 import Foundation
 
 enum CubeType: String, CaseIterable, Identifiable {
+    case twoByTwo = "2x2"
     case threeByThree = "3x3"
     case fourByFour = "4x4"
     case fiveByFive = "5x5"
-    case twoByTwo = "2x2"
     case sixBySix = "6x6"
     case sevenBySeven = "7x7"
     
