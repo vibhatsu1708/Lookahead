@@ -61,7 +61,7 @@ struct CubeMapPreview: View {
             }
         }
         .padding(8)
-        .background(Color(white: 0.1))
+        .background(.ultraThinMaterial)
         .cornerRadius(8)
         // Ensure the total view size is consistent
         .frame(width: (4 * baseFaceSize) + (3 * spacing) + 16, height: (3 * baseFaceSize) + (2 * spacing) + 16)
