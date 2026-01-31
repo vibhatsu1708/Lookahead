@@ -64,30 +64,60 @@ struct CubeState {
     mutating func apply(move: String) {
         var mutableMove = move
         
-        // Check for wide moves or slice count
-        // Examples: "Rw", "3Rw", "u" (lowercase often means 2 layers or just inner slice, WCA standard uses Rw for 2 layers)
+        // 1. Handle Slice Moves (M, E, S)
+        // M follows L, E follows D, S follows F
+        let letters = mutableMove.filter { $0.isLetter }
+        if let baseLetter = letters.first, ["M", "E", "S"].contains(String(baseLetter).uppercased()) {
+            let baseChar = String(baseLetter).uppercased()
+            let isPrime = mutableMove.contains("'")
+            let isDouble = mutableMove.contains("2")
+            let repeats = isDouble ? 2 : (isPrime ? 3 : 1)
+            
+            for _ in 0..<repeats {
+                // Rotate all middle layers (1 to size-2)
+                // For 3x3: range 1..<2 (just depth 1)
+                for d in 1..<(size - 1) {
+                    switch baseChar {
+                    case "M": rotateRim(face: .left, depth: d)
+                    case "E": rotateRim(face: .down, depth: d)
+                    case "S": rotateRim(face: .front, depth: d)
+                    default: break
+                    }
+                }
+            }
+            return
+        }
         
-        let isWide = mutableMove.contains("w")
+        // 2. Handle Standard & Wide Moves
         var layerCount = 1
+        var isWide = mutableMove.contains("w")
         
         // Check for numeric prefix e.g. "3Rw"
         if let firstChar = mutableMove.first, firstChar.isNumber {
             if let num = Int(String(firstChar)) {
                 layerCount = num
-                mutableMove.removeFirst()
+                mutableMove.removeFirst() // Remove the number so we can check the next char
             }
-        } else if isWide {
-            // "Rw" implies 2 layers by default in WCA for 4x4+ usually, 
-            // but for 3x3 "Rw" is r (M' + R). 
-            // For simplicity in standard scramblers:
-            layerCount = 2
+        }
+        
+        // Check for lowercase (e.g. "u") -> implies wide
+        if let firstChar = mutableMove.first, firstChar.isLetter {
+            if firstChar.isLowercase {
+                // Lowercase implies wide move (e.g. "u" -> "Uw")
+                layerCount = max(layerCount, 2)
+                mutableMove = mutableMove.uppercased()
+            } else if isWide && layerCount == 1 {
+                // Explicit wide "Rw" without number implies 2 layers
+                layerCount = 2
+            }
         }
         
         // Extract base face
         var baseChar = ""
         for char in mutableMove {
-            if char.isLetter && char != "w" {
-                baseChar = String(char)
+            // Ignore 'w' or 'W' (since we might have uppercased it)
+            if char.isLetter && String(char).uppercased() != "W" {
+                baseChar = String(char).uppercased()
                 break
             }
         }
@@ -96,14 +126,7 @@ struct CubeState {
         let isDouble = mutableMove.contains("2")
         let repeats = isDouble ? 2 : (isPrime ? 3 : 1)
         
-        // If not wide, layerCount remains 1 (just the face)
-        // If wide ("Rw"), it means layers 1...layerCount
-        
         for _ in 0..<repeats {
-            // For standard WCA wide moves, we rotate layers 1..layerCount together
-            // If it's a standard move (not wide), we just rotate layer 1 (index 0)
-            
-            // Standard faces
             switch baseChar {
             case "R": rotateLayers(face: .right, count: layerCount)
             case "L": rotateLayers(face: .left, count: layerCount)
