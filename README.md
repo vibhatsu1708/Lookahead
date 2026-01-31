@@ -53,6 +53,18 @@ Track your progress with professional-grade analytics.
   <img src="Docs/Images/stats_brown.png" width="30%" />
 </div>
 
+### 📚 Algorithm Trainer
+Master the cube with a comprehensive library of algorithms.
+- **Complete Database**: Includes all OLL, PLL, and F2L cases.
+- **Smart Grouping**: Learn efficiently with categorized subsets (e.g., "Dot Cases", "Basic Inserts").
+- **Interactive References**: View cases in 3D to understand the logic behind the moves.
+
+<div align="center">
+  <img src="Docs/Images/algorithm_trainer_1.png" width="30%" />
+  <img src="Docs/Images/algorithm_trainer_2.png" width="30%" />
+  <img src="Docs/Images/algorithm_trainer_3.png" width="30%" />
+</div>
+
 ---
 
 ## Privacy
