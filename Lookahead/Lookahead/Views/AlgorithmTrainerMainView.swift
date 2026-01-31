@@ -20,10 +20,6 @@ struct AlgorithmTrainerMainView: View {
                         Text("Algorithm Trainer")
                             .font(.system(size: 32, weight: .bold, design: .rounded))
                             .foregroundStyle(themeManager.colors.light)
-                        
-                        Text("Master your algorithms")
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
-                            .foregroundStyle(themeManager.colors.light.opacity(0.5))
                     }
                     
                     Spacer()
@@ -35,17 +31,17 @@ struct AlgorithmTrainerMainView: View {
                 // Content
                 List {
                     ForEach(AlgorithmCategory.allCases) { category in
-                        Section(header: Text(category.fullName)) {
+                        Section(header: Text(category.fullName).font(.system(size: 20, weight: .bold, design: .rounded))) {
                             let sections = AlgorithmData.getSections(for: category)
                             
                             if sections.isEmpty {
                                 Text("Coming Soon")
-                                    .font(.subheadline)
+                                    .font(.system(size: 16, weight: .bold, design: .rounded))
                                     .foregroundStyle(.secondary)
                                     .listRowBackground(themeManager.colors.dark.opacity(0.5))
                             } else {
                                 ForEach(sections) { section in
-                                    DisclosureGroup(section.title) {
+                                    DisclosureGroup {
                                         ScrollView(.horizontal, showsIndicators: false) {
                                             HStack(spacing: 12) {
                                                 ForEach(section.cases) { algoCase in
@@ -61,6 +57,11 @@ struct AlgorithmTrainerMainView: View {
                                             .padding(.horizontal, 20) // Add manual padding to match design, since list insets are removed
                                         }
                                         .listRowInsets(EdgeInsets())
+
+                                    } label: {
+                                        Text(section.title)
+                                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                                            .foregroundStyle(.secondary)
                                     }
                                     .listRowBackground(themeManager.colors.dark.opacity(0.5))
                                     .tint(themeManager.colors.light)
@@ -70,7 +71,7 @@ struct AlgorithmTrainerMainView: View {
                     }
                 }
                 .scrollContentBackground(.hidden)
-                .padding(.bottom, 20)
+                .padding(.bottom, 60)
             }
         }
         .sheet(item: $selectedCase) { algoCase in
