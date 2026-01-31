@@ -15,6 +15,7 @@ struct MainTabView: View {
     enum Tab {
         case timer
         case history
+        case trainer
         case stats
         case settings
     }
@@ -43,6 +44,9 @@ struct MainTabView: View {
                 
                 SettingsView()
                     .tag(Tab.settings)
+                
+                AlgorithmTrainerMainView()
+                    .tag(Tab.trainer)
             }
             .safeAreaInset(edge: .bottom) {
                 // Add spacer to prevent content being hidden behind the floating bar
@@ -66,6 +70,7 @@ struct CustomTabBar: View {
     private let tabs: [(MainTabView.Tab, String, String)] = [
         (.timer, "Timer", "timer"),
         (.history, "History", "clock.arrow.circlepath"),
+        (.trainer, "Trainer", "book.closed"),
         (.stats, "Stats", "chart.xyaxis.line"),
         (.settings, "Settings", "gearshape")
     ]
