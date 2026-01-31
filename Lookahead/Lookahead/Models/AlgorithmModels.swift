@@ -162,55 +162,317 @@ struct AlgorithmData {
     ]
     
     static let ollSections: [AlgorithmSection] = [
-        AlgorithmSection(title: "All Edges Oriented Correctly", cases: [
+        AlgorithmSection(title: "Dot Cases (No Edges Oriented)", cases: [
             AlgorithmCase(
-                name: "OCLL6 (Sune)",
-                setupMoves: "R U R' U R U2' R'", // Reverse of R U2 R' U' R U' R'
-                algorithm: "R U2 R' U' R U' R'"
+                name: "OLL 1 (Runway)",
+                setupMoves: "F R' F' R U2' F R' F' R2' U2' R'",
+                algorithm: "(R U2 R') (R' F R F') U2 (R' F R F')"
             ),
-             AlgorithmCase(
-                name: "OCLL7 (Anti-Sune)",
-                setupMoves: "R U2' R' U' R U' R'", // Reverse of (R U R' U R U2' R')
-                algorithm: "R U R' U R U2' R'"
+            AlgorithmCase(
+                name: "OLL 2 (Zamboni)",
+                setupMoves: "f U R U' R' f' F U R U' R' F'",
+                algorithm: "F (R U R' U') F' f (R U R' U') f'"
             ),
-             AlgorithmCase(
-                name: "OCLL1 (H)",
-                setupMoves: "(R U R' U') (R' U R U') (R' U2 R)", // Reverse of (R U2 R') (U' R U' R') etc.. wait, let's just inverse carefully or use a known setup
-                // Alg: (R U2 R') (U' R U R') (U' R U' R')
-                // Inv: (R U R' U) (R' U' R' U) (R U2' R')
-                algorithm: "(R U2 R') (U' R U R') (U' R U' R')"
+            AlgorithmCase(
+                name: "OLL 3 (Anti-Pinwheel)",
+                setupMoves: "F U R U' R' F' U f U R U' R' f' y",
+                algorithm: "y' f (R U R' U') f' U' F (R U R' U') F'"
             ),
-             AlgorithmCase(
-                name: "OCLL2 (Pi)",
-                setupMoves: "R' U2 R2 U R2' U R2 U2' R'", // Reverse of R U2' R2' U' R2 U' R2' U2' R
-                algorithm: "R U2' R2' U' R2 U' R2' U2' R"
+            AlgorithmCase(
+                name: "OLL 4 (Pinwheel)",
+                setupMoves: "F U R U' R' F' U' f U R U' R' f' y",
+                algorithm: "y' f (R U R' U') f' U F (R U R' U') F'"
             ),
-             AlgorithmCase(
-                name: "OCLL4 (U)",
-                setupMoves: "(F R' F' r) (U R U' r')", // Reverse of (r U R' U') (r' F R F')
-                algorithm: "(r U R' U') (r' F R F')"
+            AlgorithmCase(
+                name: "OLL 17 (Slash/Diagonal)",
+                setupMoves: "F R' F' R U2' F R' F' R U' R U' R'",
+                algorithm: "(R U R' U) (R' F R F') U2 (R' F R F')"
             ),
-             AlgorithmCase(
-                name: "OCLL5 (L)",
-                setupMoves: "R' F' r (U R U' r') F y'", // Reverse of y F' (r U R' U') r' F R
-                algorithm: "y F' (r U R' U') r' F R"
+            AlgorithmCase(
+                name: "OLL 18 (Crown)",
+                setupMoves: "r' U2' R U R' U r2' U2' R' U' R U' r'",
+                algorithm: "r U R' U R U2 r2 U' R U' R' U2 r"
             ),
-             AlgorithmCase(
-                name: "OCLL3 (Antisune+)",
-                setupMoves: "(R U2' R) D (R' U2' R) D' R2", // Inverse of R2 D (R' U2 R) D' (R' U2 R')
-                algorithm: "R2 D (R' U2 R) D' (R' U2 R')"
+            AlgorithmCase(
+                name: "OLL 19 (Bunny)",
+                setupMoves: "M U R U R' U' M' R' F R F'",
+                algorithm: "r' R U R U R' U' r R2 F R F'"
+            ),
+            AlgorithmCase(
+                name: "OLL 20 (X/Checkers)",
+                setupMoves: "r U R' U' M2' U R U' R' U' M'",
+                algorithm: "(r U R' U') M2 (U R U' R') U' M'"
             )
         ]),
-        AlgorithmSection(title: "T-Shapes", cases: [
+        AlgorithmSection(title: "Square Shapes", cases: [
             AlgorithmCase(
-                name: "T1 (T)",
-                setupMoves: "(F R' F' R) (U R U' R')", // Reverse of (R U R' U') (R' F R F')
+                name: "OLL 5",
+                setupMoves: "r' U' R U' R' U2' r",
+                algorithm: "r' U2 (R U R' U) r"
+            ),
+            AlgorithmCase(
+                name: "OLL 6",
+                setupMoves: "r U R' U R U2' r'",
+                algorithm: "r U2 (R' U' R U') r'"
+            )
+        ]),
+        AlgorithmSection(title: "Lightning Shapes", cases: [
+            AlgorithmCase(
+                name: "OLL 7",
+                setupMoves: "r U2' R' U' R U' r'",
+                algorithm: "r (U R' U R) U2 r'"
+            ),
+            AlgorithmCase(
+                name: "OLL 8",
+                setupMoves: "r' U2' R U R' U r y2'",
+                algorithm: "y2 r' (U' R U' R') U2 r"
+            ),
+            AlgorithmCase(
+                name: "OLL 11",
+                setupMoves: "M U' R U2' R' U' R U' R2' r",
+                algorithm: "M (R U R' U R U2 R') U M'"
+            ),
+            AlgorithmCase(
+                name: "OLL 12",
+                setupMoves: "F U R U' R' F' U' F U R U' R' F'",
+                algorithm: "y' M' (R' U' R U' R' U2 R) U' M"
+            ),
+            AlgorithmCase(
+                name: "OLL 39",
+                setupMoves: "L F' L' U' L U F U' L'",
+                algorithm: "f (R U R' U') f' U (R U R' U')"
+            ),
+            AlgorithmCase(
+                name: "OLL 40",
+                setupMoves: "R' F R U R' U' F' U R",
+                algorithm: "f' (L' U' L U) f U' (L' U' L U)"
+            )
+        ]),
+        AlgorithmSection(title: "Fish Shapes", cases: [
+            AlgorithmCase(
+                name: "OLL 9",
+                setupMoves: "F U R U' R2' F' R U R U' R' y'",
+                algorithm: "y (R U R' U') (R' F R) (R U R' U') F'"
+            ),
+            AlgorithmCase(
+                name: "OLL 10",
+                setupMoves: "R U2' R' F R' F' R U' R U' R'",
+                algorithm: "(R U R' U) (R' F R F') (R U2 R')"
+            ),
+            AlgorithmCase(
+                name: "OLL 35",
+                setupMoves: "R U2 R2' F R F' R U2' R'",
+                algorithm: "R U2 R2 F R F' R U2 R'"
+            ),
+            AlgorithmCase(
+                name: "OLL 37",
+                setupMoves: "F R U' R' U' R U R' F'",
+                algorithm: "F R' F' R U R U' R'"
+            )
+        ]),
+        AlgorithmSection(title: "Knight Move Shapes", cases: [
+            AlgorithmCase(
+                name: "OLL 13",
+                setupMoves: "F' U' F r U' r' U r U r'",
+                algorithm: "(r U' r') U' (r U r') (F' U F)"
+            ),
+            AlgorithmCase(
+                name: "OLL 14",
+                setupMoves: "F U F' R' F R U' R' F' R",
+                algorithm: "R' F (R U R') F' R (F U' F')"
+            ),
+            AlgorithmCase(
+                name: "OLL 15",
+                setupMoves: "r' U' r U' R' U R r' U r",
+                algorithm: "(r' U' r) (R' U' R U) (r' U r)"
+            ),
+            AlgorithmCase(
+                name: "OLL 16",
+                setupMoves: "r U r' U R U' R' r U' r'",
+                algorithm: "(r U r') (R U R' U') (r U' r')"
+            )
+        ]),
+        AlgorithmSection(title: "OCLL (All Edges Oriented)", cases: [
+            AlgorithmCase(
+                name: "OLL 21 (H/Cross)",
+                setupMoves: "R U R' U R U' R' U R U2' R' y'",
+                algorithm: "(R U R' U) (R U' R' U) (R U2 R')"
+            ),
+            AlgorithmCase(
+                name: "OLL 22 (Pi/Wheel)",
+                setupMoves: "R' U2' R2' U R2' U R2' U2' R'",
+                algorithm: "R U2 (R2' U') (R2 U') (R2' U') U' R"
+            ),
+            AlgorithmCase(
+                name: "OLL 23 (U/Headlights)",
+                setupMoves: "R2 D R' U2 R D' R' U2 R'",
+                algorithm: "(R2 D') (R U2 R') (D R U2 R)"
+            ),
+            AlgorithmCase(
+                name: "OLL 24 (T/Chameleon)",
+                setupMoves: "r U R' U' r' F R F'",
+                algorithm: "(r U R' U') (r' F R F')"
+            ),
+            AlgorithmCase(
+                name: "OLL 25 (L/Bowtie)",
+                setupMoves: "R' F' r U R U' r' F y'",
+                algorithm: "y (F' r U R') (U' r' F R)"
+            ),
+            AlgorithmCase(
+                name: "OLL 26 (Antisune)",
+                setupMoves: "R U R' U R U2' R' y'",
+                algorithm: "y R U2 (R' U' R U') R'"
+            ),
+            AlgorithmCase(
+                name: "OLL 27 (Sune)",
+                setupMoves: "R U2' R' U' R U' R'",
+                algorithm: "(R U R' U) (R U2 R')"
+            )
+        ]),
+        AlgorithmSection(title: "P Shapes", cases: [
+            AlgorithmCase(
+                name: "OLL 31 (Couch)",
+                setupMoves: "R' F R U R' U' F' U R",
+                algorithm: "(R' U' F) (U R U' R') F' R"
+            ),
+            AlgorithmCase(
+                name: "OLL 32 (Anti-Couch)",
+                setupMoves: "L U F' U' L' U L F L'",
+                algorithm: "(L U F') (U' L' U L) F L'"
+            ),
+            AlgorithmCase(
+                name: "OLL 43",
+                setupMoves: "R' U' F' U F R",
+                algorithm: "(f' L' U' L U f)"
+            ),
+            AlgorithmCase(
+                name: "OLL 44",
+                setupMoves: "F U R U' R' F'",
+                algorithm: "(f R U R' U' f')"
+            )
+        ]),
+        AlgorithmSection(title: "T Shapes", cases: [
+            AlgorithmCase(
+                name: "OLL 33",
+                setupMoves: "R U R' U' R' F R F'",
                 algorithm: "(R U R' U') (R' F R F')"
             ),
             AlgorithmCase(
-                name: "T2 (Anti-T)",
-                setupMoves: "F (U R U' R') F'", // Reverse of F (R U R' U') F'
+                name: "OLL 45",
+                setupMoves: "F U R U' R' F'",
                 algorithm: "F (R U R' U') F'"
+            )
+        ]),
+        AlgorithmSection(title: "C Shapes", cases: [
+            AlgorithmCase(
+                name: "OLL 34",
+                setupMoves: "R U R2' U' R' F R U R U' F'",
+                algorithm: "(R U R' U') (B' R' F R F' B)"
+            ),
+            AlgorithmCase(
+                name: "OLL 46",
+                setupMoves: "R' U' R' F R F' U R",
+                algorithm: "(R' U' R' F R F' U R)"
+            )
+        ]),
+        AlgorithmSection(title: "W Shapes", cases: [
+            AlgorithmCase(
+                name: "OLL 36",
+                setupMoves: "L' U' L U' L' U L U L F' L' F",
+                algorithm: "(R' U' R U') (R' U R U) (R B' R' B)"
+            ),
+            AlgorithmCase(
+                name: "OLL 38",
+                setupMoves: "R U R' U R U' R' U' R' F R F'",
+                algorithm: "(R U R' U) (R U' R' U') (R' F R F')"
+            )
+        ]),
+        AlgorithmSection(title: "Awkward Shapes", cases: [
+            AlgorithmCase(
+                name: "OLL 29",
+                setupMoves: "M F R' F' R U R U' R' U' M'",
+                algorithm: "y (R U R') U' (R U' R') (F' U' F) (R U R')"
+            ),
+            AlgorithmCase(
+                name: "OLL 30",
+                setupMoves: "F U R U2' R' U R U2' R' U' F' y2'",
+                algorithm: "y2 F U (R U2 R') U' (R U2 R') U' F'"
+            ),
+            AlgorithmCase(
+                name: "OLL 41",
+                setupMoves: "F U R U' R' F' R U2' R' U' R U' R' y2'",
+                algorithm: "y2 (R U R' U) (R U2 R') F (R U R' U') F'"
+            ),
+            AlgorithmCase(
+                name: "OLL 42",
+                setupMoves: "M U F R U R' U' F' M'",
+                algorithm: "(R' U' R U') (R' U2 R) F (R U R' U') F'"
+            )
+        ]),
+        AlgorithmSection(title: "L Shapes", cases: [
+            AlgorithmCase(
+                name: "OLL 47",
+                setupMoves: "F' U' L' U L U' L' U L F",
+                algorithm: "F' (L' U' L U) (L' U' L U) F"
+            ),
+            AlgorithmCase(
+                name: "OLL 48",
+                setupMoves: "F U R U' R' U R U' R' F'",
+                algorithm: "F (R U R' U') (R U R' U') F'"
+            ),
+            AlgorithmCase(
+                name: "OLL 49",
+                setupMoves: "r U' r2' U r2 U r2' U' r",
+                algorithm: "r U' r2 U r2 U r2 U' r"
+            ),
+            AlgorithmCase(
+                name: "OLL 50",
+                setupMoves: "r' U r2 U' r2' U' r2 U r'",
+                algorithm: "r' U r2 U' r2 U' r2 U r'"
+            ),
+            AlgorithmCase(
+                name: "OLL 53",
+                setupMoves: "r' U' R U' R' U R U' R' U2 r",
+                algorithm: "r' U' R U' R' U R U' R' U2 r"
+            ),
+            AlgorithmCase(
+                name: "OLL 54",
+                setupMoves: "r U R' U R U' R' U R U2' r'",
+                algorithm: "(r U R' U R U' R' U R U2 r')"
+            )
+        ]),
+        AlgorithmSection(title: "Line Shapes", cases: [
+            AlgorithmCase(
+                name: "OLL 51",
+                setupMoves: "f U R U' R' U R U' R' f'",
+                algorithm: "f (R U R' U') (R U R' U') f'"
+            ),
+            AlgorithmCase(
+                name: "OLL 52",
+                setupMoves: "R U R' U R d' R U' R' F'",
+                algorithm: "(R U R' U) R d' R U' R' F'"
+            ),
+            AlgorithmCase(
+                name: "OLL 55",
+                setupMoves: "R U2 R2' U' R U' R' U2' F R F'",
+                algorithm: "(R U2 R2' U') (R U' R' U2') (F R F')"
+            ),
+            AlgorithmCase(
+                name: "OLL 56",
+                setupMoves: "r U r' U R U' R' U R U' R' r U' r'",
+                algorithm: "(r U r' U R U' R' U R U' R' r U' r')"
+            )
+        ]),
+        AlgorithmSection(title: "All Corners Oriented", cases: [
+            AlgorithmCase(
+                name: "OLL 28 (Stealth)",
+                setupMoves: "R U R' U' M' U R U' r'",
+                algorithm: "(r U R' U') M (U R U' R')"
+            ),
+            AlgorithmCase(
+                name: "OLL 57 (Stealth)",
+                setupMoves: "R U R' U' M' U R U' r'",
+                algorithm: "(R U R' U') M' (U R U' r')"
             )
         ])
     ]
