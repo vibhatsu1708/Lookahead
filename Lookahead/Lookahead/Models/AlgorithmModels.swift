@@ -479,43 +479,119 @@ struct AlgorithmData {
     
 
     static let pllSections: [AlgorithmSection] = [
-        AlgorithmSection(title: "Permutations of Edges Only", cases: [
+        AlgorithmSection(title: "Edges Only", cases: [
             AlgorithmCase(
-                name: "Ub",
-                setupMoves: "(R U' R) U R (U R U' R') U' R2", // Inverse of R2 U (R U R' U') R' U' (R' U R')
-                algorithm: "R2 U (R U R' U') R' U' (R' U R')"
+                name: "Ua Perm",
+                setupMoves: "M2' U' M' U2' M U' M2'",
+                algorithm: "(M2 U M) U2 (M' U M2)"
             ),
             AlgorithmCase(
-                name: "Ua",
-                setupMoves: "R2 (U R U R') U' R' (U' R' U R')", // Inverse of (R U' R U) R U (R U' R' U') R2
-                algorithm: "(R U' R U) R U (R U' R' U') R2"
+                name: "Ub Perm",
+                setupMoves: "M2' U M' U2' M U M2'",
+                algorithm: "(M2 U' M) U2 (M' U' M2)"
             ),
             AlgorithmCase(
-                name: "Z",
-                setupMoves: "(M U2 M2') (U2 M) (U' M2' U' M2')", // Inverse of (M2' U M2' U) (M' U2) (M2' U2 M')
-                algorithm: "(M2' U M2' U) (M' U2) (M2' U2 M')"
+                name: "H Perm",
+                setupMoves: "M2' U' M2' U2' M2' U' M2'",
+                algorithm: "M2' U M2' U2 M2' U M2'"
             ),
             AlgorithmCase(
-                name: "H",
-                setupMoves: "(M2' U' M2') U2 (M2' U' M2')", // Inverse of (M2' U M2') U2 (M2' U M2')
-                algorithm: "(M2' U M2') U2 (M2' U M2')"
+                name: "Z Perm",
+                setupMoves: "M U2' M2' U2' M U' M2' U' M2'",
+                algorithm: "(M2 U) (M2 U) (M' U2) (M2 U2) (M' U2)"
             )
         ]),
-        AlgorithmSection(title: "Permutations of Corners Only", cases: [
+        AlgorithmSection(title: "Corners Only", cases: [
             AlgorithmCase(
-                name: "Aa",
-                setupMoves: "x R2 D2 (R U R') D2 (R U' R) x'", // Inverse of x (R' U R') D2 (R U' R') D2 R2 x'
+                name: "Aa Perm",
+                setupMoves: "x R2' D2' R U R' D2' R U' R x'",
                 algorithm: "x (R' U R') D2 (R U' R') D2 R2 x'"
             ),
             AlgorithmCase(
-                name: "Ab",
-                setupMoves: "x (R' U' R') D2 (R U' R') D2 R2 x'", // Inverse of x R2' D2 (R U R') D2 (R U' R) x'
-                algorithm: "x R2' D2 (R U R') D2 (R U' R) x'"
+                name: "Ab Perm",
+                setupMoves: "x R' U R' D2' R U' R' D2' R2' x'",
+                algorithm: "x R2 D2 (R U R') D2 (R U' R) x'"
             ),
             AlgorithmCase(
-                name: "E",
-                setupMoves: "x' (D R U R') (D' R U' R') (D R U' R') (D' R U R') x", // Inverse of x' (R U' R' D) (R U R' D') (R U R' D) (R U' R' D') x
-                algorithm: "x' (R U' R' D) (R U R' D') (R U R' D) (R U' R' D') x"
+                name: "E Perm",
+                setupMoves: "x' D R U R' D' R U' R' D R U' R' D' R U R' x y'",
+                algorithm: "y x' (R U' R' D) (R U R' D') (R U R' D) (R U' R' D') x"
+            )
+        ]),
+        AlgorithmSection(title: "Adjacent Corner Swap", cases: [
+            AlgorithmCase(
+                name: "T Perm",
+                setupMoves: "R U R' U' R' F R2 U' R' U' R U R' F'",
+                algorithm: "(R U R' U') (R' F R2) (U' R' U') (R U R' F')"
+            ),
+            AlgorithmCase(
+                name: "F Perm",
+                setupMoves: "R' U' R U' R' U R U R2' F' R U R U' R' F U R y'",
+                algorithm: "(R' U' F') (R U R' U') R' F R2 (U' R' U') (R U R' U) R"
+            ),
+            AlgorithmCase(
+                name: "Ja Perm",
+                setupMoves: "L' R' U2' R U R' U2' L U' R y'",
+                algorithm: "y (R' U L') U2 (R U' R') U2 R L"
+            ),
+            AlgorithmCase(
+                name: "Jb Perm",
+                setupMoves: "R U R2' F' R U R U' R' F R U' R'",
+                algorithm: "(R U R' F') (R U R' U') R' F R2 U' R'"
+            ),
+            AlgorithmCase(
+                name: "Ra Perm",
+                setupMoves: "R U' R' U' R U R D R' U' R D' R' U2 R'",
+                algorithm: "(R U' R' U') (R U R D) (R' U' R D') R' U2 R'"
+            ),
+            AlgorithmCase(
+                name: "Rb Perm",
+                setupMoves: "R2 F R U R U' R' F' R U2 R' U2 R",
+                algorithm: "(R' U2 R U2) R' F (R U R' U') R' F' R2"
+            ),
+            AlgorithmCase(
+                name: "Y Perm",
+                setupMoves: "F R U' R' U' R U R' F' R U R' U' R' F R F'",
+                algorithm: "F R U' R' U' R U R' F' (R U R' U') (R' F R F')"
+            )
+        ]),
+        AlgorithmSection(title: "Diagonal Corner Swap", cases: [
+            AlgorithmCase(
+                name: "Na Perm",
+                setupMoves: "R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'",
+                algorithm: "(R U R' U) (R U R' F' R U R' U' R' F R2 U' R') U2 R U' R'"
+            ),
+            AlgorithmCase(
+                name: "Nb Perm",
+                setupMoves: "F r' F' r U r U' r2' D' F r U r' F' D r",
+                algorithm: "(R' U R U' R') (F' U' F) (R U R') (F R' F') (R U' R)"
+            ),
+            AlgorithmCase(
+                name: "V Perm",
+                setupMoves: "D2' R' U R D' R2' U' R' U R' U R' D' R U2' R'",
+                algorithm: "(R' U R' U') (R D' R' D) (R' U D') (R2 U' R2) D R2"
+            )
+        ]),
+        AlgorithmSection(title: "G Permutations", cases: [
+            AlgorithmCase(
+                name: "Ga Perm",
+                setupMoves: "R' U' R D' U R2' U R' U R U' R U' R2' D",
+                algorithm: "R2 (U R' U R' U' R U') R2 D (U' R' U R) D'"
+            ),
+            AlgorithmCase(
+                name: "Gb Perm",
+                setupMoves: "R2' U R' U R' U' R U' R2' D U' R' U R D'",
+                algorithm: "(R' U' R U) D' R2 (U R' U R U' R U') R2 D"
+            ),
+            AlgorithmCase(
+                name: "Gc Perm",
+                setupMoves: "D' R U R' U' D R2' U' R U' R' U R' U R2'",
+                algorithm: "R2 (U' R U' R U R' U) R2 D' (U R U' R') D"
+            ),
+            AlgorithmCase(
+                name: "Gd Perm",
+                setupMoves: "R2' U' R U' R U R' U R2' D' U R U' R' D",
+                algorithm: "(R U R' U') D R2 (U' R U' R' U R' U) R2 D'"
             )
         ])
     ]
