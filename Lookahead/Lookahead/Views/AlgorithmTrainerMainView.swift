@@ -31,7 +31,7 @@ struct AlgorithmTrainerMainView: View {
                 // Content
                 List {
                     ForEach(AlgorithmCategory.allCases) { category in
-                        Section(header: Text(category.fullName).font(.system(size: 20, weight: .bold, design: .rounded))) {
+                        Section(header: Text("\(category.fullName) (\(AlgorithmData.getTotalCount(for: category)))").font(.system(size: 20, weight: .bold, design: .rounded))) {
                             let sections = AlgorithmData.getSections(for: category)
                             
                             if sections.isEmpty {
@@ -59,7 +59,7 @@ struct AlgorithmTrainerMainView: View {
                                         .listRowInsets(EdgeInsets())
 
                                     } label: {
-                                        Text(section.title)
+                                        Text("\(section.title) (\(section.cases.count))")
                                             .font(.system(size: 16, weight: .bold, design: .rounded))
                                             .foregroundStyle(.secondary)
                                     }

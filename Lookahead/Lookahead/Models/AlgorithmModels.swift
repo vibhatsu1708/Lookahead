@@ -603,4 +603,9 @@ struct AlgorithmData {
         case .pll: return pllSections
         }
     }
+    
+    static func getTotalCount(for category: AlgorithmCategory) -> Int {
+        let sections = getSections(for: category)
+        return sections.reduce(0) { $0 + $1.cases.count }
+    }
 }
