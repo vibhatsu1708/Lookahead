@@ -28,34 +28,61 @@ struct ScrambleView: View {
                 .offset(y: isAnimating ? 0 : 10)
                 .animation(.spring(response: 0.5, dampingFraction: 0.8), value: isAnimating)
             
-            // Refresh button
+            // Refresh & Preview buttons
             if let onRefresh = onRefresh {
-                Button(action: {
-                    withAnimation(.spring(response: 0.3)) {
-                        isAnimating = false
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                        onRefresh()
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
-                            isAnimating = true
+                HStack(spacing: 12) {
+                    Button(action: {
+                        withAnimation(.spring(response: 0.3)) {
+                            isAnimating = false
                         }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                            onRefresh()
+                            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                                isAnimating = true
+                            }
+                        }
+                    }) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 14, weight: .semibold))
+                            Text("New Scramble")
+                                .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        }
+                        .foregroundStyle(themeManager.colors.light.opacity(0.6))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .fill(themeManager.colors.light.opacity(0.08))
+                        )
                     }
-                }) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "arrow.clockwise")
-                            .font(.system(size: 14, weight: .semibold))
-                        Text("New Scramble")
-                            .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .buttonStyle(.plain)
+                    
+                    Button(action: {
+                        // Create state and show
+                        var state = CubeState(size: cubeType == .threeByThree ? 3 : 3) // Default to 3x3 for now
+                        state.apply(moves: scramble)
+                        FloatingPreviewManager.shared.toggle(with: state)
+                    }) {
+                        Image(systemName: "cube.transparent")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(themeManager.colors.light.opacity(0.6))
+                            .padding(10)
+                            .background(
+                                Circle()
+                                    .fill(themeManager.colors.light.opacity(0.08))
+                            )
                     }
-                    .foregroundStyle(themeManager.colors.light.opacity(0.6))
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(themeManager.colors.light.opacity(0.08))
-                    )
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+            }
+        }
+        .onChange(of: scramble) { _, newValue in
+            // If preview is active, update it
+            if FloatingPreviewManager.shared.currentCubeState != nil {
+                var state = CubeState(size: 3)
+                state.apply(moves: newValue)
+                FloatingPreviewManager.shared.show(with: state)
             }
         }
         .onAppear {
