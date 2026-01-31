@@ -60,7 +60,7 @@ struct ScrambleView: View {
                     
                     Button(action: {
                         // Create state and show
-                        var state = CubeState(size: cubeType == .threeByThree ? 3 : 3) // Default to 3x3 for now
+                        var state = CubeState(type: cubeType)
                         state.apply(moves: scramble)
                         FloatingPreviewManager.shared.toggle(with: state)
                     }) {
@@ -80,7 +80,7 @@ struct ScrambleView: View {
         .onChange(of: scramble) { _, newValue in
             // If preview is active, update it
             if FloatingPreviewManager.shared.currentCubeState != nil {
-                var state = CubeState(size: 3)
+                var state = CubeState(type: cubeType)
                 state.apply(moves: newValue)
                 FloatingPreviewManager.shared.show(with: state)
             }
@@ -89,6 +89,9 @@ struct ScrambleView: View {
             withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.2)) {
                 isAnimating = true
             }
+        }
+        .onDisappear {
+            FloatingPreviewManager.shared.hide()
         }
         .onChange(of: scramble) { _, _ in
             isAnimating = false

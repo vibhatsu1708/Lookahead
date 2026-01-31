@@ -104,7 +104,7 @@ class FloatingPreviewController: UIViewController {
         // Create new
         let previewView = CubeMapPreview(state: state)
         let hc = UIHostingController(rootView: previewView)
-        hc.view.backgroundColor = .clear
+        hc.view.backgroundColor = UIColor.clear
         hc.view.frame = floatingView.bounds
         hc.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
